@@ -7,12 +7,21 @@ import ReportModal from '../components/ReportModal';
 
 const getStatusStyle = (printer) => {
   if (!printer) return { color: 'var(--neon-emerald)', label: 'Loading', cls: 'badge-emerald' };
-  if (printer.printer_status === 'Stopped' || printer.printer_status === 'Offline')
-    return { color: 'var(--neon-rose)', label: printer.printer_status, cls: 'badge-rose' };
-  if (printer.printer_status === 'Warning' || (printer.error_status && printer.error_status !== 'OK' && printer.printer_status !== 'Stopped'))
-    return { color: 'var(--neon-amber)', label: 'Warning', cls: 'badge-amber' };
+  
+  const hasSpecificError = printer.error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(printer.error_status).trim());
+
   if (printer.printer_status === 'Printing' || printer.printer_status === 'Warmup')
     return { color: 'var(--neon-violet)', label: printer.printer_status, cls: 'badge-violet' };
+  
+  if (hasSpecificError)
+    return { color: 'var(--neon-rose)', label: printer.error_status, cls: 'badge-rose' };
+
+  if (printer.printer_status === 'Stopped' || printer.printer_status === 'Offline')
+    return { color: 'var(--neon-rose)', label: printer.printer_status, cls: 'badge-rose' };
+    
+  if (printer.printer_status === 'Warning')
+    return { color: 'var(--neon-amber)', label: 'Warning', cls: 'badge-amber' };
+
   return { color: 'var(--neon-emerald)', label: 'OK', cls: 'badge-emerald' };
 };
 

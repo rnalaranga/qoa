@@ -132,6 +132,8 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
   let isConnected = true;
   let statusLabel = 'Connected';
 
+  const hasSpecificError = error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(error_status).trim());
+
   if (printer_status === 'Printing' || printer_status === 'Warmup') {
     StatusIcon = Zap;
     statusColor = '#a855f7';
@@ -139,6 +141,15 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     pillClass = 'status-pill-printing';
     isPrinting = true;
     statusLabel = printer_status;
+  } else if (hasSpecificError) {
+    StatusIcon = AlertTriangle;
+    statusColor = '#ff3b6b';
+    statusClass = 'status-error';
+    pillClass = 'status-pill-error';
+    isWarning = true;
+    isCritical = true;
+    isConnected = false;
+    statusLabel = error_status;
   } else if (printer_status === 'Stopped' || printer_status === 'Offline') {
     StatusIcon = XCircle;
     statusColor = '#ff3b6b';
@@ -147,7 +158,7 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     isCritical = true;
     isConnected = false;
     statusLabel = 'Offline';
-  } else if (printer_status === 'Warning' || (error_status && error_status !== 'OK')) {
+  } else if (printer_status === 'Warning') {
     StatusIcon = AlertTriangle;
     statusColor = '#ffb800';
     statusClass = 'status-warning';
