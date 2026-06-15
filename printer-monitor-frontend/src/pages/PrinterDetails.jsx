@@ -14,7 +14,7 @@ const getStatusStyle = (printer) => {
     return { color: 'var(--neon-violet)', label: printer.printer_status, cls: 'badge-violet' };
   
   if (hasSpecificError)
-    return { color: 'var(--neon-rose)', label: printer.error_status, cls: 'badge-rose' };
+    return { color: 'var(--neon-rose)', label: 'Error', cls: 'badge-rose' };
 
   if (printer.printer_status === 'Stopped' || printer.printer_status === 'Offline')
     return { color: 'var(--neon-rose)', label: printer.printer_status, cls: 'badge-rose' };
@@ -127,6 +127,9 @@ const PrinterDetails = () => {
   }
 
   const { cls, label, color } = getStatusStyle(printer);
+  const hasSpecificError = printer.error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(printer.error_status).trim());
+  const isCritical = printer.printer_status === 'Stopped' || printer.printer_status === 'Offline';
+  
   const tonerNum = parseInt(printer.toner_level?.replace('%', '')) || 0;
   const isTonerError = printer.toner_level === 'Insert Toner' || printer.toner_level === 'Replace Toner';
   const tonerColor = isTonerError || tonerNum <= 10 ? 'var(--neon-rose)' : tonerNum <= 25 ? 'var(--neon-amber)' : 'var(--neon-emerald)';
@@ -137,13 +140,19 @@ const PrinterDetails = () => {
   return (
     <div className="page-container" style={{ paddingBottom: '4rem' }}>
       {/* Top Header with Back button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="hide-on-print" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
         <button className="icon-btn" onClick={() => navigate(-1)} style={{ border: '1px solid var(--border-medium)', background: 'var(--bg-input)' }}>
           <ArrowLeft size={18} />
         </button>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-bright)' }}>{printer.qoa_num || printer.ip_address}</h1>
           <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>{printer.model} · {printer.ip_address}</p>
+          {(hasSpecificError || isCritical) && (
+             <div style={{ marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--neon-rose)', fontWeight: 600, background: 'var(--neon-rose-dim)', padding: '0.3rem 0.75rem', borderRadius: '6px', border: '1px solid rgba(255,59,107,0.2)' }}>
+                <AlertTriangle size={14} />
+                {hasSpecificError ? printer.error_status : 'Printer Offline'}
+             </div>
+          )}
         </div>
         <div style={{ marginLeft: 'auto' }}>
           <span className={`badge ${cls}`} style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}>{label}</span>

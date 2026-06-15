@@ -149,7 +149,7 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     isWarning = true;
     isCritical = true;
     isConnected = false;
-    statusLabel = error_status;
+    statusLabel = 'Error';
   } else if (printer_status === 'Stopped' || printer_status === 'Offline') {
     StatusIcon = XCircle;
     statusColor = '#ff3b6b';
@@ -219,10 +219,10 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
       </div>
 
       {/* Error / Offline Alert */}
-      {((error_status && error_status !== 'OK') || isCritical) && (
+      {(hasSpecificError || isCritical || isWarning) && (
         <div className={`compact-alert ${isCritical ? 'critical' : 'warning'}`}>
           <AlertTriangle size={13} />
-          <span>{isCritical ? 'Printer Offline' : error_status}</span>
+          <span>{hasSpecificError ? error_status : isCritical ? 'Printer Offline' : (error_status || 'Warning')}</span>
         </div>
       )}
 
