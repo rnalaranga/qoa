@@ -27,8 +27,8 @@ const PrinterDetails = () => {
     const fetchPrinterAndHistory = async () => {
       try {
         const [printerRes, historyRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/printers'),
-          axios.get(`http://localhost:5000/api/printers/${ip}/history`)
+          axios.get('http://153.75.225.81:5000/api/printers'),
+          axios.get(`http://153.75.225.81:5000/api/printers/${ip}/history`)
         ]);
         
         const found = printerRes.data.find(p => p.ip_address === ip);

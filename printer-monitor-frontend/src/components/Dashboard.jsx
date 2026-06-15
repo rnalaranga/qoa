@@ -15,8 +15,8 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const [printersRes, customersRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/printers'),
-        axios.get('http://localhost:5000/api/customers')
+        axios.get('http://153.75.225.81:5000/api/printers'),
+        axios.get('http://153.75.225.81:5000/api/customers')
       ]);
       setPrinters(printersRes.data);
       setCustomers(customersRes.data);

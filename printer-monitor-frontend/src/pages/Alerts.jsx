@@ -10,7 +10,7 @@ const Alerts = () => {
 
   const fetchAlerts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/printers');
+      const res = await axios.get('http://153.75.225.81:5000/api/printers');
       const printers = res.data;
       
       // Generate alerts based on printer status

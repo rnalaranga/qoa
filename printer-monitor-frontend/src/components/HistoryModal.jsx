@@ -51,7 +51,7 @@ const HistoryModal = ({ printer, onClose }) => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/printers/${printer.ip_address}/history`);
+        const response = await axios.get(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/history`);
         // Sort chronologically first
         const chronologicalHistory = [...response.data].reverse();
         
