@@ -8,6 +8,7 @@ import FleetStatus from './pages/FleetStatus';
 import Alerts from './pages/Alerts';
 import Settings from './pages/Settings';
 import PrinterDetails from './pages/PrinterDetails';
+import PrinterCalendar from './pages/PrinterCalendar';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="alerts" element={<Alerts />} />
           <Route path="settings" element={<Settings />} />
           <Route path="printer/:ip" element={<PrinterDetails />} />
+          <Route path="printer/:ip/calendar" element={<PrinterCalendar />} />
         </Route>
       </Routes>
     </Router>

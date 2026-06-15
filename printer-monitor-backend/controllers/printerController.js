@@ -158,7 +158,8 @@ const getPrinterReport = async (req, res) => {
                 MIN(CAST(pages_printed AS UNSIGNED)) as start_count,
                 MAX(CAST(pages_printed AS UNSIGNED)) as end_count,
                 MAX(CAST(pages_printed AS UNSIGNED)) - MIN(CAST(pages_printed AS UNSIGNED)) as prints_taken,
-                ROUND(AVG(CAST(REPLACE(toner_level, '%', '') AS UNSIGNED))) as avg_toner
+                ROUND(AVG(CAST(REPLACE(toner_level, '%', '') AS UNSIGNED))) as avg_toner,
+                SUM(CASE WHEN error_status != '-' AND error_status != '' AND error_status IS NOT NULL THEN 1 ELSE 0 END) as error_count
             FROM printer_logs
             WHERE ip_address = ? 
             AND pages_printed NOT IN ('-', 'NaN') 

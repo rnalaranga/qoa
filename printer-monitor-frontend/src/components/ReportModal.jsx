@@ -71,7 +71,8 @@ const ReportModal = ({ printer, onClose }) => {
                 type="date" 
                 value={startDate} 
                 onChange={e => setStartDate(e.target.value)}
-                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'white', colorScheme: 'dark' }}
+                className="dark-date-input"
+                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', colorScheme: 'dark' }}
               />
             </div>
             <div style={{ flex: 1, minWidth: '150px' }}>
@@ -80,7 +81,8 @@ const ReportModal = ({ printer, onClose }) => {
                 type="date" 
                 value={endDate} 
                 onChange={e => setEndDate(e.target.value)}
-                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'white', colorScheme: 'dark' }}
+                className="dark-date-input"
+                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', colorScheme: 'dark' }}
               />
             </div>
             <button className="btn-primary" onClick={generateReport} disabled={loading} style={{ height: '38px', padding: '0 1.5rem', flex: '0 0 auto' }}>

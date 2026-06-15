@@ -1528,6 +1528,10 @@ body {
   stroke: var(--border-subtle) !important;
 }
 
+.dark-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
 /* ============================================================
    PRINT STYLES
    ============================================================ */
@@ -1537,21 +1541,43 @@ body {
     color: black !important;
   }
   
-  .hide-on-print {
+  /* Hide UI elements taking up space */
+  .sidebar, .topbar, .hide-on-print {
     display: none !important;
   }
 
-  .show-on-print {
-    display: block !important;
+  /* Remove padding from containers */
+  .main-content, .page-container, .dashboard-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 
+  /* Hide all body elements visually except what we want */
+  body * {
+    visibility: hidden;
+  }
+
+  .show-on-print, .show-on-print * {
+    visibility: visible !important;
+  }
+
+  .print-modal, .print-modal * {
+    visibility: visible;
+  }
+
+  /* Reset modal to top left of paper */
   .print-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
     background: transparent !important;
     width: 100% !important;
     max-width: 100% !important;
+    margin: 0 !important;
   }
 
   .print-summary {
@@ -1591,9 +1617,8 @@ body {
   .modal-overlay {
     background: transparent !important;
     backdrop-filter: none !important;
-    position: relative !important;
-    align-items: flex-start !important;
-    padding: 0 !important;
+    position: static !important;
   }
 }
+
 

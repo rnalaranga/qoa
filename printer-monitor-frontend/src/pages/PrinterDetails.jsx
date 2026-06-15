@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText } from 'lucide-react';
+import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText, Calendar } from 'lucide-react';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ReportModal from '../components/ReportModal';
 
@@ -249,18 +249,66 @@ const PrinterDetails = () => {
               <Settings size={18} style={{ color: 'var(--neon-amber)' }} />
               Remote Actions
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => setShowReportModal(true)}>
-                <FileText size={15} /> Generate Usage Report
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+              {/* Tile 1: Usage Report */}
+              <button 
+                className="action-tile"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left' }}
+                onClick={() => setShowReportModal(true)}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--neon-cyan)'; e.currentTarget.style.background = 'var(--neon-cyan-dim)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.background = 'var(--bg-input)'; }}
+              >
+                <div style={{ padding: '0.5rem', background: 'rgba(0,212,255,0.1)', borderRadius: '8px', marginBottom: '0.75rem', color: 'var(--neon-cyan)' }}>
+                  <FileText size={18} />
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-bright)' }}>Usage Report</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Generate PDF</div>
               </button>
-              <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => alert('Ping sent')}>
-                <Activity size={15} /> Ping Device
+
+              {/* Tile 2: Full Calendar */}
+              <button 
+                className="action-tile"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left' }}
+                onClick={() => navigate(`/printer/${ip}/calendar`)}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--neon-violet)'; e.currentTarget.style.background = 'var(--neon-violet-dim)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.background = 'var(--bg-input)'; }}
+              >
+                <div style={{ padding: '0.5rem', background: 'rgba(168,85,247,0.1)', borderRadius: '8px', marginBottom: '0.75rem', color: 'var(--neon-violet)' }}>
+                  <Calendar size={18} />
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-bright)' }}>Full Calendar</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Day-by-Day Grid</div>
               </button>
-              <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => alert('Restart initiated')}>
-                <Cpu size={15} /> Restart Spooler
+
+              {/* Tile 3: Ping Device */}
+              <button 
+                className="action-tile"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left' }}
+                onClick={() => alert('Ping sent')}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--neon-emerald)'; e.currentTarget.style.background = 'var(--neon-emerald-dim)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.background = 'var(--bg-input)'; }}
+              >
+                <div style={{ padding: '0.5rem', background: 'rgba(0,255,136,0.1)', borderRadius: '8px', marginBottom: '0.75rem', color: 'var(--neon-emerald)' }}>
+                  <Activity size={18} />
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-bright)' }}>Ping Device</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Check Network</div>
               </button>
-              <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => alert('Print test page sent')}>
-                <Printer size={15} /> Print Test Page
+
+              {/* Tile 4: Restart Spooler */}
+              <button 
+                className="action-tile"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-input)', border: '1px solid var(--border-medium)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left' }}
+                onClick={() => alert('Restart initiated')}
+                onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--neon-rose)'; e.currentTarget.style.background = 'var(--neon-rose-dim)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.background = 'var(--bg-input)'; }}
+              >
+                <div style={{ padding: '0.5rem', background: 'rgba(255,59,107,0.1)', borderRadius: '8px', marginBottom: '0.75rem', color: 'var(--neon-rose)' }}>
+                  <Cpu size={18} />
+                </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-bright)' }}>Restart Spooler</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Clear Queue</div>
               </button>
             </div>
           </div>
