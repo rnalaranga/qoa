@@ -1621,4 +1621,118 @@ body {
   }
 }
 
+/* ============================================================
+   MOBILE RESPONSIVE & COLLAPSIBLE SIDEBAR
+   ============================================================ */
+
+/* Desktop Collapsed Sidebar */
+.sidebar.collapsed {
+  width: 80px;
+}
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .logo-sub,
+.sidebar.collapsed .sidebar-section-label,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .user-info {
+  display: none;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.collapse-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+.collapse-btn:hover {
+  color: var(--text-primary);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+/* Mobile Media Query */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    width: 260px;
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+
+  /* Reflow grid layouts */
+  .dashboard-stats {
+    grid-template-columns: 1fr !important;
+  }
+  .page-container > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="grid-template-columns: repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Calendar mobile scrolling */
+  .glass-panel[style*="minHeight: '600px'"] {
+    overflow-x: auto;
+    padding: 1rem !important;
+  }
+  .glass-panel[style*="minHeight: '600px'"] > div {
+    min-width: 700px;
+  }
+}
+
+
 

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, BarChart3, Search, Bell, Printer, ChevronRight, Moon, Sun, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, Users, BarChart3, Search, Bell, Printer, ChevronRight, ChevronLeft, Menu, Moon, Sun, Settings as SettingsIcon } from 'lucide-react';
 import { useTheme } from '../ThemeContext';
 
 const Layout = () => {
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -27,9 +29,15 @@ const Layout = () => {
   ];
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
+      
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div className="mobile-overlay" onClick={() => setIsMobileOpen(false)} />
+      )}
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-icon">Q</div>
           <div>
@@ -75,9 +83,17 @@ const Layout = () => {
         <div style={{ flex: 1 }} />
 
         <div className="sidebar-footer">
+          <button 
+            className="collapse-btn hide-on-mobile"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+          
           <div className="user-profile">
             <div className="avatar">A</div>
-            <div style={{ minWidth: 0 }}>
+            <div className="user-info">
               <div className="user-name">Admin User</div>
               <div className="user-email">admin@qoa.com</div>
             </div>
@@ -90,6 +106,9 @@ const Layout = () => {
         {/* Top Navigation Bar */}
         <header className="topbar">
           <div className="topbar-left">
+            <button className="mobile-menu-btn" onClick={() => setIsMobileOpen(!isMobileOpen)}>
+              <Menu size={20} />
+            </button>
             <div className="page-breadcrumb">
               <span>QOA</span>
               <ChevronRight size={14} />
