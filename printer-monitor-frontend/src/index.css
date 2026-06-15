@@ -1709,12 +1709,32 @@ body {
     padding: 1rem;
   }
 
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
   .topbar {
     padding: 0 1rem;
+    gap: 1rem;
+  }
+
+  .page-breadcrumb {
+    display: none;
+  }
+
+  .search-container {
+    width: auto;
+    flex: 1;
+  }
+
+  .topbar-actions {
+    flex: 1;
   }
 
   /* Reflow grid layouts */
-  .dashboard-stats {
+  .stats-row {
     grid-template-columns: 1fr !important;
   }
   .page-container > div[style*="grid-template-columns"] {
