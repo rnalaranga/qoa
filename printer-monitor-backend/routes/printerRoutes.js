@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { updatePrinterStatus, getPrinters, getPrinterHistory, assignPrinterToCustomer } = require('../controllers/printerController');
+const { updatePrinterStatus, getPrinters, getPrinterHistory, getPrinterReport, assignPrinterToCustomer } = require('../controllers/printerController');
 
 // POST /api/printers/status
 router.post('/status', updatePrinterStatus);
@@ -10,6 +10,9 @@ router.get('/', getPrinters);
 
 // GET /api/printers/:ip/history
 router.get('/:ip/history', getPrinterHistory);
+
+// GET /api/printers/:ip/report
+router.get('/:ip/report', getPrinterReport);
 
 // PUT /api/printers/:ip/assign
 router.put('/:ip/assign', assignPrinterToCustomer);

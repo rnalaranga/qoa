@@ -144,6 +144,45 @@ const getPrinterHistory = async (req, res) => {
     }
 };
 
+// @desc    Get daily usage report for a specific printer
+// @route   GET /api/printers/:ip/report
+// @access  Public
+const getPrinterReport = async (req, res) => {
+    try {
+        const { ip } = req.params;
+        const { startDate, endDate } = req.query;
+
+        let query = `
+            SELECT 
+                DATE(created_at) as date,
+                MIN(CAST(pages_printed AS UNSIGNED)) as start_count,
+                MAX(CAST(pages_printed AS UNSIGNED)) as end_count,
+                MAX(CAST(pages_printed AS UNSIGNED)) - MIN(CAST(pages_printed AS UNSIGNED)) as prints_taken,
+                ROUND(AVG(CAST(REPLACE(toner_level, '%', '') AS UNSIGNED))) as avg_toner
+            FROM printer_logs
+            WHERE ip_address = ? 
+            AND pages_printed NOT IN ('-', 'NaN') 
+            AND pages_printed IS NOT NULL 
+            AND toner_level NOT IN ('-', 'NaN', 'Replace Toner', 'Insert Toner')
+        `;
+        const params = [ip];
+
+        if (startDate && endDate) {
+            query += ' AND DATE(created_at) BETWEEN ? AND ?';
+            params.push(startDate, endDate);
+        }
+
+        query += ' GROUP BY DATE(created_at) ORDER BY date ASC';
+
+        const [rows] = await db.query(query, params);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error fetching printer report:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
 // @desc    Assign printer to customer
 // @route   PUT /api/printers/:ip/assign
 // @access  Public
@@ -167,5 +206,6 @@ module.exports = {
     updatePrinterStatus,
     getPrinters,
     getPrinterHistory,
+    getPrinterReport,
     assignPrinterToCustomer
 };

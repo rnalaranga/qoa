@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer } from 'lucide-react';
+import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText } from 'lucide-react';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import ReportModal from '../components/ReportModal';
 
 const getStatusStyle = (printer) => {
   if (!printer) return { color: 'var(--neon-emerald)', label: 'Loading', cls: 'badge-emerald' };
@@ -22,6 +23,7 @@ const PrinterDetails = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     const fetchPrinterAndHistory = async () => {
@@ -248,6 +250,9 @@ const PrinterDetails = () => {
               Remote Actions
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => setShowReportModal(true)}>
+                <FileText size={15} /> Generate Usage Report
+              </button>
               <button className="btn-ghost" style={{ justifyContent: 'flex-start' }} onClick={() => alert('Ping sent')}>
                 <Activity size={15} /> Ping Device
               </button>
@@ -262,6 +267,13 @@ const PrinterDetails = () => {
 
         </div>
       </div>
+      
+      {showReportModal && (
+        <ReportModal 
+          printer={printer} 
+          onClose={() => setShowReportModal(false)} 
+        />
+      )}
     </div>
   );
 };

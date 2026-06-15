@@ -1527,3 +1527,73 @@ body {
 .recharts-cartesian-grid-vertical line {
   stroke: var(--border-subtle) !important;
 }
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .hide-on-print {
+    display: none !important;
+  }
+
+  .show-on-print {
+    display: block !important;
+  }
+
+  .print-modal {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .print-summary {
+    display: flex !important;
+    gap: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .print-box {
+    border: 1px solid #ccc !important;
+    background: transparent !important;
+    padding: 1rem !important;
+  }
+
+  .print-label {
+    color: #555 !important;
+  }
+
+  .print-value {
+    color: #000 !important;
+  }
+
+  .print-table-wrapper {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .print-table th, .print-table td {
+    color: #000 !important;
+    border-bottom: 1px solid #ccc !important;
+  }
+
+  .print-table th {
+    background: #f9f9f9 !important;
+  }
+
+  .modal-overlay {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    position: relative !important;
+    align-items: flex-start !important;
+    padding: 0 !important;
+  }
+}
+
