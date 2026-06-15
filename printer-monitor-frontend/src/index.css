@@ -1734,7 +1734,7 @@ body {
   }
 
   /* Reflow grid layouts */
-  .stats-row {
+  .stats-row, .printer-grid {
     grid-template-columns: 1fr !important;
   }
   .page-container > div[style*="grid-template-columns"] {
