@@ -144,7 +144,7 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     isConnected = false;
     mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
     badges = [{ label: 'Agent Not Running', color: '#64748b', icon: AlertTriangle }];
-  } else if (printer_status === 'Stopped' || printer_status === 'Offline') {
+  } else if (printer_status === 'Offline') {
     isConnected = false;
     mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
     badges = [{ label: 'Offline', color: '#64748b', icon: XCircle }];
@@ -156,14 +156,14 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     // Printer is connected
     badges.push({ label: 'Connected', color: '#00ff88', icon: CheckCircle2, pulse: true });
 
-    if (hasSpecificError || printer_status === 'Warning') {
-      if (isMaintenance || printer_status === 'Warning') {
+    if (hasSpecificError || printer_status === 'Stopped' || printer_status === 'Error' || printer_status === 'Warning' || isTonerError) {
+      if (isMaintenance) {
         // Warning State
         isWarning = true;
         bulbColor = '#ffb800'; // Yellow bulb
         badges.push({ label: 'Warning', color: '#ffb800', icon: AlertTriangle });
       } else {
-        // Critical Error State (e.g. Paper Jam)
+        // Critical Error State (e.g. Paper Jam, Cover Open, Tray Empty, Toner Replace)
         isCritical = true;
         mainThemeColor = '#ff3b6b'; // Everything turns red
         bulbColor = '#ff3b6b';

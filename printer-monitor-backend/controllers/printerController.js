@@ -110,9 +110,9 @@ const getPrinters = async (req, res) => {
             let pValid = pStr !== 'null' && pStr !== 'undefined' && pStr !== 'NaN' && parseInt(pStr) > 0;
             let tValid = tStr !== 'null' && tStr !== 'undefined' && tStr !== 'NaN' && (parseInt(tStr) > 0 || tStr === 'Replace Toner' || tStr === 'Insert Toner');
 
-            // Agent Staleness Check (3 minutes)
+            // Agent Staleness Check (1 minute)
             const updatedTime = new Date(row.last_updated).getTime();
-            row.is_stale = (now - updatedTime) > 180000;
+            row.is_stale = (now - updatedTime) > 60000;
 
             if (!pValid || !tValid) {
                 const [logs] = await db.query(
