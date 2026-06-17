@@ -216,6 +216,29 @@ const assignPrinterToCustomer = async (req, res) => {
     }
 };
 
+// @desc    Register (or re-register) a printer - clears Deleted status
+// @route   POST /api/printers/register
+// @access  Public
+const registerPrinter = async (req, res) => {
+    try {
+        const { ip_address } = req.body;
+        if (!ip_address) return res.status(400).json({ message: 'IP address is required' });
+
+        // If it was previously deleted, reset its status so it can be monitored again
+        const [existing] = await db.query('SELECT * FROM printer_status WHERE ip_address = ?', [ip_address]);
+        if (existing.length > 0 && existing[0].online_status === 'Deleted') {
+            await db.query(
+                'UPDATE printer_status SET online_status = "Online" WHERE ip_address = ?',
+                [ip_address]
+            );
+        }
+        res.status(200).json({ message: 'Printer registered successfully' });
+    } catch (error) {
+        console.error('Error registering printer:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // @desc    Remove printer from monitoring
 // @route   POST /api/printers/remove
 // @access  Public
@@ -272,6 +295,7 @@ module.exports = {
     getPrinterReport,
     assignPrinterToCustomer,
     removePrinterStatus,
+    registerPrinter,
     deletePrinter,
     clearPrinterLogs
 };
