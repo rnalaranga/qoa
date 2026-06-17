@@ -138,6 +138,22 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Desktop Agent */}
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '1rem', color: 'var(--text-bright)' }}>
+            <Globe size={18} style={{ color: 'var(--neon-cyan)' }} />
+            Desktop Agent
+          </h3>
+          <div style={{ marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              Download the Windows desktop agent to monitor local printers and automatically sync data to this cloud platform without requiring Java.
+            </p>
+            <a href="http://localhost:5000/api/download-agent" download className="btn-primary" style={{ textDecoration: 'none', display: 'inline-flex', justifyContent: 'center', width: '100%' }}>
+              Download Windows Agent
+            </a>
+          </div>
+        </div>
+
       </div>
     </div>
   );

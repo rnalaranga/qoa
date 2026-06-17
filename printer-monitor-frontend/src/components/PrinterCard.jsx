@@ -117,64 +117,67 @@ const TonerGauge = ({ percentage, color, isOffline }) => {
 
 /* ── Main PrinterCard Component ─────────────────────────────── */
 const PrinterCard = ({ printer, onClick, onAssign }) => {
-  const { qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, customer_id } = printer;
+  const { qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, customer_id, online_status, is_stale } = printer;
 
   const tonerNum = parseInt(toner_level?.replace('%', '')) || 0;
   const isTonerError = toner_level === 'Insert Toner' || toner_level === 'Replace Toner';
 
-  let StatusIcon = CheckCircle2;
-  let statusColor = '#00ff88';
-  let statusClass = 'status-ok';
-  let pillClass = 'status-pill-ok';
-  let isWarning = false;
-  let isCritical = false;
-  let isPrinting = false;
-  let isConnected = true;
-  let statusLabel = 'Connected';
-
+  const isRemoved = online_status === 'Removed';
   const hasSpecificError = error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(error_status).trim());
+  const isMaintenance = hasSpecificError && String(error_status).toLowerCase().includes('maintenance');
 
-  if (printer_status === 'Printing' || printer_status === 'Warmup') {
-    StatusIcon = Zap;
-    statusColor = '#a855f7';
-    statusClass = 'status-printing';
-    pillClass = 'status-pill-printing';
-    isPrinting = true;
-    statusLabel = printer_status;
-  } else if (hasSpecificError) {
-    StatusIcon = AlertTriangle;
-    statusColor = '#ff3b6b';
-    statusClass = 'status-error';
-    pillClass = 'status-pill-error';
-    isWarning = true;
-    isCritical = true;
+  let isConnected = true;
+  let isPrinting = false;
+  let isCritical = false;
+  let isWarning = false;
+
+  let mainThemeColor = '#00ff88'; 
+  let bulbColor = '#00ff88'; 
+  let tonerColor = isTonerError ? '#ff3b6b' : '#00ff88';
+  let badges = [];
+
+  if (isRemoved) {
     isConnected = false;
-    statusLabel = 'Error';
+    mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
+    badges = [{ label: 'Removed', color: '#64748b', icon: XCircle }];
+  } else if (is_stale) {
+    isConnected = false;
+    mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
+    badges = [{ label: 'Agent Not Running', color: '#64748b', icon: AlertTriangle }];
   } else if (printer_status === 'Stopped' || printer_status === 'Offline') {
-    StatusIcon = XCircle;
-    statusColor = '#ff3b6b';
-    statusClass = 'status-error';
-    pillClass = 'status-pill-error';
-    isCritical = true;
     isConnected = false;
-    statusLabel = 'Offline';
-  } else if (printer_status === 'Warning') {
-    StatusIcon = AlertTriangle;
-    statusColor = '#ffb800';
-    statusClass = 'status-warning';
-    pillClass = 'status-pill-warning';
-    isWarning = true;
-    isConnected = false;
-    statusLabel = 'Warning';
-  } else if (printer_status === 'OK' || printer_status === 'Ready') {
-    statusLabel = 'Connected';
+    mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
+    badges = [{ label: 'Offline', color: '#64748b', icon: XCircle }];
+  } else if (printer_status === 'Printing' || printer_status === 'Warmup') {
+    isPrinting = true;
+    mainThemeColor = '#a855f7'; bulbColor = '#a855f7'; tonerColor = '#a855f7';
+    badges = [{ label: printer_status, color: '#a855f7', icon: Zap }];
+  } else {
+    // Printer is connected
+    badges.push({ label: 'Connected', color: '#00ff88', icon: CheckCircle2, pulse: true });
+
+    if (hasSpecificError || printer_status === 'Warning') {
+      if (isMaintenance || printer_status === 'Warning') {
+        // Warning State
+        isWarning = true;
+        bulbColor = '#ffb800'; // Yellow bulb
+        badges.push({ label: 'Warning', color: '#ffb800', icon: AlertTriangle });
+      } else {
+        // Critical Error State (e.g. Paper Jam)
+        isCritical = true;
+        mainThemeColor = '#ff3b6b'; // Everything turns red
+        bulbColor = '#ff3b6b';
+        tonerColor = '#ff3b6b';
+        badges.push({ label: 'Error', color: '#ff3b6b', icon: AlertTriangle });
+      }
+    }
   }
 
-  const gaugeColor = isTonerError ? '#ff3b6b' : statusColor;
-  const displayTonerNum = isTonerError ? 0 : tonerNum;
+  const cardStyle = isRemoved ? { opacity: 0.5, filter: 'grayscale(1)', pointerEvents: 'none' } : {};
+  const statusClass = isCritical ? 'status-error' : isWarning ? 'status-warning' : isPrinting ? 'status-printing' : (isConnected ? 'status-ok' : 'status-warning');
 
   return (
-    <div className={`premium-compact-card ${statusClass}`} onClick={onClick}>
+    <div className={`premium-compact-card ${statusClass}`} style={cardStyle} onClick={isRemoved ? null : onClick}>
 
       {/* Header */}
       <div className="compact-header">
@@ -182,20 +185,21 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
           <span className="qoa-label">QOA</span>
           <span className="qoa-value">{qoa_num || 'N/A'}</span>
         </div>
-        <div className={`compact-status ${pillClass}`}>
-          {isConnected && !isPrinting && (
-            <div
-              className="anim-network-pulse"
-              style={{ width: 7, height: 7, background: '#00ff88', borderRadius: '50%' }}
-            />
-          )}
-          {(!isConnected || isPrinting) && (
-            <StatusIcon
-              size={13}
-              className={isPrinting ? 'anim-spin-slow' : isWarning ? 'anim-pulse-warning' : ''}
-            />
-          )}
-          <span>{statusLabel}</span>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {badges.map((b, i) => {
+            const Icon = b.icon;
+            return (
+              <div key={i} className="compact-status" style={{ background: `${b.color}15`, color: b.color, border: `1px solid ${b.color}30` }}>
+                {b.pulse && !isPrinting && (
+                  <div className="anim-network-pulse" style={{ width: 7, height: 7, background: b.color, borderRadius: '50%' }} />
+                )}
+                {(!b.pulse || isPrinting) && (
+                  <Icon size={12} className={isPrinting && b.label === 'Printing' ? 'anim-spin-slow' : b.label === 'Warning' ? 'anim-pulse-warning' : ''} />
+                )}
+                <span style={{ fontSize: '0.75rem' }}>{b.label}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -209,20 +213,20 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
         <div className="compact-graphic-wrapper">
           <div
             className="graphic-glow-bg"
-            style={{ background: `radial-gradient(circle, ${statusColor}40 0%, transparent 70%)` }}
+            style={{ background: `radial-gradient(circle, ${mainThemeColor}40 0%, transparent 70%)` }}
           />
-          <PrinterIllustration isPrinting={isPrinting} statusColor={statusColor} />
+          <PrinterIllustration isPrinting={isPrinting} statusColor={bulbColor} />
         </div>
         <div className="compact-gauge-wrapper">
-          <TonerGauge percentage={displayTonerNum} color={gaugeColor} isOffline={isCritical} />
+          <TonerGauge percentage={isTonerError ? 0 : tonerNum} color={tonerColor} isOffline={!isConnected} />
         </div>
       </div>
 
       {/* Error / Offline Alert */}
-      {(hasSpecificError || isCritical || isWarning) && (
-        <div className={`compact-alert ${isCritical ? 'critical' : 'warning'}`}>
+      {(hasSpecificError || isCritical || isWarning || !isConnected) && !isRemoved && !is_stale && (
+        <div className={`compact-alert ${isCritical ? 'critical' : 'warning'}`} style={!isConnected ? {background: 'rgba(100,116,139,0.1)', color: '#94a3b8', border: '1px solid rgba(100,116,139,0.2)'} : {}}>
           <AlertTriangle size={13} />
-          <span>{hasSpecificError ? error_status : isCritical ? 'Printer Offline' : (error_status || 'Warning')}</span>
+          <span>{hasSpecificError ? error_status : isCritical ? 'Printer Error' : !isConnected ? 'No Connection' : (error_status || 'Warning')}</span>
         </div>
       )}
 
@@ -230,9 +234,9 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
       <div className="compact-footer">
         <div className="compact-stat">
           <span className="stat-label">Pages</span>
-          <span className="stat-val" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: isCritical ? 'var(--text-muted)' : undefined }}>
+          <span className="stat-val" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: (isCritical || printer_status === 'Offline') ? 'var(--text-muted)' : undefined }}>
             {pages_printed && !isNaN(parseInt(pages_printed)) ? parseInt(pages_printed).toLocaleString() : '—'}
-            {isCritical && <AlertTriangle size={12} style={{ color: 'var(--neon-amber)' }} title="Last known reading (Offline)" />}
+            {(isCritical || printer_status === 'Offline') && <AlertTriangle size={12} style={{ color: 'var(--neon-amber)' }} title="Last known reading (Offline)" />}
           </span>
         </div>
 

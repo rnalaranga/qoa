@@ -12,6 +12,7 @@ import {
   ComposedChart
 } from 'recharts';
 import { X, Loader2, Printer, TrendingDown, FileText } from 'lucide-react';
+import GlassDialog from './GlassDialog';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -47,6 +48,28 @@ const HistoryModal = ({ printer, onClose }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [dialogState, setDialogState] = useState({
+    isOpen: false,
+    type: 'confirm',
+    title: '',
+    message: '',
+    intent: 'danger',
+    onConfirm: null
+  });
+
+  const confirmAction = (title, message, intent, onConfirm) => {
+    setDialogState({ isOpen: true, type: 'confirm', title, message, intent, onConfirm });
+  };
+  
+  const showAlert = (title, message, intent, then = null) => {
+    setDialogState({ isOpen: true, type: 'alert', title, message, intent, onConfirm: () => {
+      closeDialog();
+      if(then) then();
+    }});
+  };
+  
+  const closeDialog = () => setDialogState(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -126,7 +149,7 @@ const HistoryModal = ({ printer, onClose }) => {
       <div className="modal-content" style={{ maxWidth: 680 }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="modal-header">
+        <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Printer size={18} style={{ color: 'var(--neon-cyan)' }} />
@@ -134,7 +157,47 @@ const HistoryModal = ({ printer, onClose }) => {
             </h2>
             <p>{printer.model} · {printer.ip_address}</p>
           </div>
-          <button className="close-btn" onClick={onClose}><X size={17} /></button>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button
+              onClick={() => {
+                confirmAction(
+                  'Clear Logs',
+                  'Are you sure you want to clear ALL logs for this printer? This cannot be undone.',
+                  'warning',
+                  async () => {
+                    closeDialog();
+                    try {
+                      await axios.delete(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/logs`);
+                      showAlert('Logs Cleared', 'The logs have been successfully cleared.', 'success', onClose);
+                    } catch(e) { showAlert('Error', 'Failed to clear logs.', 'danger'); }
+                  }
+                );
+              }}
+              style={{ padding: '6px 12px', background: 'transparent', border: '1px solid var(--neon-amber)', color: 'var(--neon-amber)', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              Clear Logs
+            </button>
+            <button
+              onClick={() => {
+                confirmAction(
+                  'Delete Printer',
+                  'Are you sure you want to completely DELETE this printer? It will be removed from all agents and dashboards.',
+                  'danger',
+                  async () => {
+                    closeDialog();
+                    try {
+                      await axios.delete(`http://153.75.225.81:5000/api/printers/${printer.ip_address}`);
+                      showAlert('Printer Deleted', 'The printer has been completely removed from the system.', 'success', onClose);
+                    } catch(e) { showAlert('Error', 'Failed to delete printer.', 'danger'); }
+                  }
+                );
+              }}
+              style={{ padding: '6px 12px', background: 'rgba(255,59,107,0.1)', border: '1px solid var(--neon-rose)', color: 'var(--neon-rose)', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              Delete Printer
+            </button>
+            <button className="close-btn" onClick={onClose} style={{ marginLeft: '10px' }}><X size={17} /></button>
+          </div>
         </div>
 
         <div className="modal-body">
@@ -281,6 +344,7 @@ const HistoryModal = ({ printer, onClose }) => {
           )}
         </div>
       </div>
+      <GlassDialog {...dialogState} onCancel={closeDialog} />
     </div>
   );
 };

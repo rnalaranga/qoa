@@ -27,6 +27,11 @@ const updatePrinterStatus = async (req, res) => {
         if (existing.length > 0) {
             const old = existing[0];
             
+            // Check if admin has marked this printer as Deleted
+            if (old.online_status === 'Deleted') {
+                return res.status(200).json({ action: 'DELETE_FROM_AGENT' });
+            }
+
             // Preserve last known valid values if incoming data is 0 or NaN
             let finalPages = pages_printed;
             if (!finalPages || String(finalPages) === 'NaN' || parseInt(finalPages) === 0) {
@@ -91,15 +96,23 @@ const getPrinters = async (req, res) => {
             SELECT p.*, c.name as customer_name 
             FROM printer_status p 
             LEFT JOIN customers c ON p.customer_id = c.id
+            WHERE p.online_status IS NULL OR p.online_status != 'Deleted'
         `;
         const [rows] = await db.query(query);
 
-        // Self-heal: If the current data is NaN or 0, find the last valid reading from logs
+        // Calculate staleness (Agent Not Running)
+        const now = new Date().getTime();
+
+        // Self-heal and staleness
         for (let row of rows) {
             let pStr = String(row.pages_printed);
             let tStr = String(row.toner_level);
             let pValid = pStr !== 'null' && pStr !== 'undefined' && pStr !== 'NaN' && parseInt(pStr) > 0;
             let tValid = tStr !== 'null' && tStr !== 'undefined' && tStr !== 'NaN' && (parseInt(tStr) > 0 || tStr === 'Replace Toner' || tStr === 'Insert Toner');
+
+            // Agent Staleness Check (3 minutes)
+            const updatedTime = new Date(row.last_updated).getTime();
+            row.is_stale = (now - updatedTime) > 180000;
 
             if (!pValid || !tValid) {
                 const [logs] = await db.query(
@@ -203,10 +216,62 @@ const assignPrinterToCustomer = async (req, res) => {
     }
 };
 
+// @desc    Remove printer from monitoring
+// @route   POST /api/printers/remove
+// @access  Public
+const removePrinterStatus = async (req, res) => {
+    try {
+        const { ip_address } = req.body;
+        if (!ip_address) return res.status(400).json({ message: 'IP address is required' });
+        
+        await db.query(
+            'UPDATE printer_status SET online_status = "Removed" WHERE ip_address = ?',
+            [ip_address]
+        );
+        res.status(200).json({ message: 'Printer removed successfully' });
+    } catch (error) {
+        console.error('Error removing printer:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Delete printer entirely (Dashboard only)
+// @route   DELETE /api/printers/:ip
+// @access  Public
+const deletePrinter = async (req, res) => {
+    try {
+        const { ip } = req.params;
+        await db.query('DELETE FROM printer_logs WHERE ip_address = ?', [ip]);
+        await db.query('UPDATE printer_status SET online_status = "Deleted" WHERE ip_address = ?', [ip]);
+        res.status(200).json({ message: 'Printer and logs deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting printer:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Clear logs for a printer
+// @route   DELETE /api/printers/:ip/logs
+// @access  Public
+const clearPrinterLogs = async (req, res) => {
+    try {
+        const { ip } = req.params;
+        await db.query('DELETE FROM printer_logs WHERE ip_address = ?', [ip]);
+        res.status(200).json({ message: 'Printer logs cleared successfully' });
+    } catch (error) {
+        console.error('Error clearing printer logs:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
 module.exports = {
     updatePrinterStatus,
     getPrinters,
     getPrinterHistory,
     getPrinterReport,
-    assignPrinterToCustomer
+    assignPrinterToCustomer,
+    removePrinterStatus,
+    deletePrinter,
+    clearPrinterLogs
 };
