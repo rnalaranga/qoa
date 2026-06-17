@@ -52,7 +52,7 @@ const updatePrinterStatus = async (req, res) => {
             await db.query(
                 `UPDATE printer_status SET 
                     qoa_num = ?, model = ?, toner_level = ?, pages_printed = ?, 
-                    printer_status = ?, error_status = ?, online_status = ? 
+                    printer_status = ?, error_status = ?, online_status = ?, last_updated = NOW()
                  WHERE ip_address = ?`,
                 [qoa_num, model, finalToner, finalPages, printer_status, error_status, online_status, ip_address]
             );

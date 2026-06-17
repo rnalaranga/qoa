@@ -54,16 +54,30 @@ const Dashboard = () => {
   })).filter(group => group.printers.length > 0);
 
   // Stats
+  const getPrinterState = (p) => {
+    if (p.online_status === 'Removed' || p.is_stale || p.printer_status === 'Offline') return 'Offline';
+    
+    const isTonerError = p.toner_level === 'Insert Toner' || p.toner_level === 'Replace Toner';
+    const hasSpecificError = p.error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(p.error_status).trim());
+    const isMaintenance = hasSpecificError && String(p.error_status).toLowerCase().includes('maintenance');
+
+    if (hasSpecificError || p.printer_status === 'Stopped' || p.printer_status === 'Error' || p.printer_status === 'Warning' || isTonerError) {
+      if (isMaintenance) return 'Warning';
+      return 'Error';
+    }
+    return 'Online';
+  };
+
   const totalPrinters = printers.length;
-  const onlinePrinters = printers.filter(p => p.printer_status !== 'Offline' && p.printer_status !== 'Stopped').length;
-  const warningPrinters = printers.filter(p => p.printer_status === 'Warning').length;
-  const offlinePrinters = printers.filter(p => p.printer_status === 'Offline' || p.printer_status === 'Stopped').length;
+  const onlinePrinters = printers.filter(p => getPrinterState(p) === 'Online').length;
+  const warningPrinters = printers.filter(p => getPrinterState(p) === 'Warning').length;
+  const errorOfflinePrinters = printers.filter(p => ['Offline', 'Error'].includes(getPrinterState(p))).length;
 
   const statChips = [
     { label: 'Total Printers', value: totalPrinters, icon: '🖨️', accent: 'var(--neon-cyan)', bg: 'var(--neon-cyan-dim)' },
     { label: 'Online', value: onlinePrinters, icon: '✅', accent: 'var(--neon-emerald)', bg: 'var(--neon-emerald-dim)' },
     { label: 'Warnings', value: warningPrinters, icon: '⚠️', accent: 'var(--neon-amber)', bg: 'var(--neon-amber-dim)' },
-    { label: 'Offline', value: offlinePrinters, icon: '🔴', accent: 'var(--neon-rose)', bg: 'var(--neon-rose-dim)' },
+    { label: 'Errors / Offline', value: errorOfflinePrinters, icon: '🔴', accent: 'var(--neon-rose)', bg: 'var(--neon-rose-dim)' },
   ];
 
   if (loading && printers.length === 0) {
