@@ -93,15 +93,13 @@ const updatePrinterStatus = async (req, res) => {
 const getPrinters = async (req, res) => {
     try {
         const query = `
-            SELECT p.*, c.name as customer_name 
+            SELECT p.*, c.name as customer_name,
+            TIMESTAMPDIFF(SECOND, p.last_updated, NOW()) as seconds_since_update
             FROM printer_status p 
             LEFT JOIN customers c ON p.customer_id = c.id
             WHERE p.online_status IS NULL OR p.online_status != 'Deleted'
         `;
         const [rows] = await db.query(query);
-
-        // Calculate staleness (Agent Not Running)
-        const now = new Date().getTime();
 
         // Self-heal and staleness
         for (let row of rows) {
@@ -110,9 +108,8 @@ const getPrinters = async (req, res) => {
             let pValid = pStr !== 'null' && pStr !== 'undefined' && pStr !== 'NaN' && parseInt(pStr) > 0;
             let tValid = tStr !== 'null' && tStr !== 'undefined' && tStr !== 'NaN' && (parseInt(tStr) > 0 || tStr === 'Replace Toner' || tStr === 'Insert Toner');
 
-            // Agent Staleness Check (1 minute)
-            const updatedTime = new Date(row.last_updated).getTime();
-            row.is_stale = (now - updatedTime) > 60000;
+            // Agent Staleness Check (1 minute = 60 seconds)
+            row.is_stale = row.seconds_since_update > 60;
 
             if (!pValid || !tValid) {
                 const [logs] = await db.query(
