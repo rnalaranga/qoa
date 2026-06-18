@@ -136,13 +136,12 @@ const AnimatedPrinter = ({ printer }) => {
         textShadow: `0 0 10px ${themeColor}80`,
         fontFamily: 'JetBrains Mono, monospace'
       }}>
-        {activeState === 'jam' ? 'Paper Jam Detected' :
-         activeState === 'cover_open' ? 'Side Cover Open' :
-         activeState === 'toner_error' ? 'Toner Error' :
-         activeState === 'printing' ? 'Printing...' :
-         activeState === 'warmup' ? 'Warming Up...' :
-         activeState === 'stopped_error' ? 'Printer Error' :
-         activeState === 'offline' ? 'Offline' : 'Ready / Connected'}
+        {activeState === 'jam' || activeState === 'cover_open' || activeState === 'stopped_error' 
+           ? printer.error_status 
+         : activeState === 'toner_error' ? 'Toner Error'
+         : activeState === 'printing' ? 'Printing...'
+         : activeState === 'warmup' ? 'Warming Up...'
+         : activeState === 'offline' ? 'Offline' : 'Ready / Connected'}
       </div>
     </div>
   );
