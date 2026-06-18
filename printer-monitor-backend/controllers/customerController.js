@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const bcrypt = require('bcryptjs');
 
 // @desc    Get all customers with assigned printers
 // @route   GET /api/customers
@@ -75,8 +76,36 @@ const createCustomer = async (req, res) => {
             [name, contact_info || null]
         );
 
+        const customerId = result.insertId;
+
+        // If username and password are provided, create the user account
+        if (req.body.username && req.body.password) {
+            const { username, password } = req.body;
+            
+            // Check if username already exists
+            const [userExists] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+            if (userExists.length > 0) {
+                // We created the customer but user creation failed. 
+                // Return success for customer but warn about user.
+                return res.status(201).json({
+                    id: customerId,
+                    name,
+                    contact_info,
+                    message: 'Customer created, but user account failed (Username already exists)'
+                });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            await db.query(
+                'INSERT INTO users (username, password_hash, role, customer_id) VALUES (?, ?, ?, ?)',
+                [username, hashedPassword, 'customer', customerId]
+            );
+        }
+
         res.status(201).json({ 
-            id: result.insertId, 
+            id: customerId, 
             name, 
             contact_info,
             message: 'Customer created successfully' 
