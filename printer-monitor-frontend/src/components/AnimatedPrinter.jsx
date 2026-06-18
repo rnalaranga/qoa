@@ -5,23 +5,26 @@ const AnimatedPrinter = ({ printer }) => {
   const error = String(printer.error_status || '').toLowerCase();
   const toner = printer.toner_level || '';
   
-  const isOffline = printer.is_stale || status === 'Offline' || status === 'Stopped' || printer.online_status === 'Removed';
+  const isOffline = printer.is_stale || status === 'Offline' || printer.online_status === 'Removed';
   const isJam = error.includes('jam');
   const isCoverOpen = error.includes('cover') && error.includes('open');
   const isTonerError = toner === 'Insert Toner' || toner === 'Replace Toner';
-  const isPrinting = status === 'Printing' || status === 'Warmup';
+  const isPrinting = status === 'Printing';
+  const isWarmup = status === 'Warmup';
   
-  // Decide active state
+  // Decide active state (Priority matters)
   let activeState = 'normal';
   if (isOffline) activeState = 'offline';
   else if (isJam) activeState = 'jam';
   else if (isCoverOpen) activeState = 'cover_open';
   else if (isTonerError) activeState = 'toner_error';
   else if (isPrinting) activeState = 'printing';
+  else if (isWarmup) activeState = 'warmup';
+  else if (status === 'Stopped') activeState = 'stopped_error'; // Generic error fallback
 
   const themeColor = activeState === 'offline' ? '#64748b' : 
-                     (activeState === 'jam' || activeState === 'cover_open' || activeState === 'toner_error') ? '#ff3b6b' :
-                     activeState === 'printing' ? '#a855f7' : '#00ff88';
+                     (activeState === 'jam' || activeState === 'cover_open' || activeState === 'toner_error' || activeState === 'stopped_error') ? '#ff3b6b' :
+                     (activeState === 'printing' || activeState === 'warmup') ? '#a855f7' : '#00ff88';
 
   return (
     <div style={{ width: '100%', maxWidth: 280, margin: '0 auto', position: 'relative' }}>
@@ -102,7 +105,7 @@ const AnimatedPrinter = ({ printer }) => {
         <rect x="65" y="72" width={activeState === 'offline' ? 0 : 110} height="4" rx="2" 
           fill={themeColor} 
           filter={activeState !== 'offline' ? "url(#glowPrinter)" : ""}
-          className={activeState === 'jam' || activeState === 'cover_open' || activeState === 'toner_error' ? 'anim-pulse-error' : ''}
+          className={activeState === 'jam' || activeState === 'cover_open' || activeState === 'toner_error' || activeState === 'stopped_error' ? 'anim-pulse-error' : ''}
           style={{ transition: 'all 0.5s ease' }}
         />
 
@@ -134,6 +137,8 @@ const AnimatedPrinter = ({ printer }) => {
          activeState === 'cover_open' ? 'Side Cover Open' :
          activeState === 'toner_error' ? 'Toner Error' :
          activeState === 'printing' ? 'Printing...' :
+         activeState === 'warmup' ? 'Warming Up...' :
+         activeState === 'stopped_error' ? 'Printer Error' :
          activeState === 'offline' ? 'Offline' : 'Ready / Connected'}
       </div>
     </div>
