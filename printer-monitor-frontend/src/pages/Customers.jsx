@@ -347,7 +347,7 @@ const Customers = () => {
                   />
                 </div>
 
-                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
+                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'transparent', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
                   <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: 'var(--neon-cyan)' }}>
                     {isEditMode ? 'Create / Update User Account (Optional)' : 'Create User Account (Optional)'}
                   </h4>

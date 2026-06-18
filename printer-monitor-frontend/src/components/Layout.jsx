@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, BarChart3, Search, Bell, Printer, ChevronRight, ChevronLeft, Menu, Moon, Sun, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, Users, BarChart3, Search, Bell, Printer, ChevronRight, ChevronLeft, Menu, Moon, Sun, Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const Layout = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -24,9 +26,12 @@ const Layout = () => {
 
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
-    { to: '/customers', icon: Users, label: 'Customers' },
     { to: '/analytics', icon: BarChart3, label: 'Analytics' },
   ];
+
+  if (user?.role === 'admin') {
+    navItems.splice(1, 0, { to: '/customers', icon: Users, label: 'Customers' });
+  }
 
   return (
     <div className={`app-layout ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -57,7 +62,7 @@ const Layout = () => {
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
               <Icon size={18} />
-              {label}
+              <span>{label}</span>
               <span className="nav-dot" />
             </NavLink>
           ))}
@@ -70,13 +75,15 @@ const Layout = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <NavLink to="/fleet" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Printer size={18} />
-              Fleet Status
+              <span>Fleet Status</span>
               <span className="nav-badge" style={{ marginLeft: 'auto' }}>Live</span>
             </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <SettingsIcon size={18} />
-              Settings
-            </NavLink>
+            {user?.role === 'admin' && (
+              <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                <SettingsIcon size={18} />
+                <span>Settings</span>
+              </NavLink>
+            )}
           </div>
         </div>
 
@@ -92,11 +99,14 @@ const Layout = () => {
           </button>
           
           <div className="user-profile">
-            <div className="avatar">A</div>
+            <div className="avatar">{user?.username?.charAt(0).toUpperCase() || 'U'}</div>
             <div className="user-info">
-              <div className="user-name">Admin User</div>
-              <div className="user-email">admin@qoa.com</div>
+              <div className="user-name" style={{ textTransform: 'capitalize' }}>{user?.username || 'User'}</div>
+              <div className="user-email" style={{ textTransform: 'capitalize' }}>{user?.role || 'Guest'}</div>
             </div>
+            <button className="icon-btn logout-btn" onClick={logout} title="Logout" style={{ marginLeft: 'auto' }}>
+              <LogOut size={16} color="var(--neon-rose)" />
+            </button>
           </div>
         </div>
       </aside>

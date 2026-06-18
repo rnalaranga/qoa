@@ -1654,11 +1654,18 @@ body {
 .sidebar.collapsed .logo-sub,
 .sidebar.collapsed .sidebar-section-label,
 .sidebar.collapsed .nav-item span,
-.sidebar.collapsed .user-info {
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .logout-btn {
   display: none;
 }
 .sidebar.collapsed .nav-item {
   justify-content: center;
+  padding: 0.75rem 0;
+}
+.sidebar.collapsed .user-profile {
+  justify-content: center;
+  background: transparent;
+  border-color: transparent;
   padding: 0.75rem 0;
 }
 
