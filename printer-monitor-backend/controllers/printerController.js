@@ -92,14 +92,21 @@ const updatePrinterStatus = async (req, res) => {
 // @access  Public
 const getPrinters = async (req, res) => {
     try {
-        const query = `
+        let query = `
             SELECT p.*, c.name as customer_name,
             TIMESTAMPDIFF(SECOND, p.last_updated, NOW()) as seconds_since_update
             FROM printer_status p 
             LEFT JOIN customers c ON p.customer_id = c.id
-            WHERE p.online_status IS NULL OR p.online_status != 'Deleted'
+            WHERE (p.online_status IS NULL OR p.online_status != 'Deleted')
         `;
-        const [rows] = await db.query(query);
+        let params = [];
+
+        if (req.user && req.user.role === 'customer') {
+            query += ` AND p.customer_id = ?`;
+            params.push(req.user.customer_id);
+        }
+
+        const [rows] = await db.query(query, params);
 
         // Self-heal and staleness
         for (let row of rows) {

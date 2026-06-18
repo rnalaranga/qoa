@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const printerRoutes = require('./routes/printerRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const authRoutes = require('./routes/authRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json()); // Parses incoming JSON requests
 // Routes
 app.use('/api/printers', printerRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
 // Health check endpoint
