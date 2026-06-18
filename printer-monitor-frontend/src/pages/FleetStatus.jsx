@@ -18,7 +18,7 @@ const getPrinterState = (p) => {
 };
 
 const getStatusStyle = (state) => {
-  if (state === 'Offline') return { color: 'var(--neon-rose)', label: 'Offline', cls: 'badge-rose' };
+  if (state === 'Offline') return { color: '#94a3b8', label: 'Offline', cls: 'badge-gray' };
   if (state === 'Error') return { color: 'var(--neon-rose)', label: 'Error', cls: 'badge-rose' };
   if (state === 'Warning') return { color: 'var(--neon-amber)', label: 'Warning', cls: 'badge-amber' };
   if (state === 'Printing') return { color: 'var(--neon-violet)', label: 'Printing', cls: 'badge-violet' };
@@ -152,7 +152,7 @@ const FleetStatus = () => {
                   const isError = state === 'Error';
 
                   return (
-                    <tr key={p.ip_address} style={{ borderBottom: '1px solid var(--border-subtle)', opacity: isOffline ? 0.6 : 1 }}>
+                    <tr key={p.ip_address} style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: label === 'OK' ? 'transparent' : color + '0D' }}>
                       {/* Device / Network */}
                       <td style={{ padding: '1.25rem 1.5rem', borderLeft: (label === 'Offline' || label === 'Warning' || label === 'Error') ? `2px solid ${color}` : '2px solid transparent' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

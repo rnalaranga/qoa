@@ -1473,6 +1473,7 @@ body {
 .badge-rose { color: var(--neon-rose); background: var(--neon-rose-dim); border: 1px solid rgba(255,59,107,0.2); }
 .badge-amber { color: var(--neon-amber); background: var(--neon-amber-dim); border: 1px solid rgba(255,184,0,0.2); }
 .badge-violet { color: var(--neon-violet); background: var(--neon-violet-dim); border: 1px solid rgba(168,85,247,0.2); }
+.badge-gray { color: #94a3b8; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.2); }
 
 /* Empty State */
 .empty-state {
