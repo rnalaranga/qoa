@@ -7,7 +7,7 @@ const AnimatedPrinter = ({ printer }) => {
   
   const isOffline = printer.is_stale || status === 'Offline' || printer.online_status === 'Removed';
   const isJam = error.includes('jam');
-  const isCoverOpen = error.includes('cover') && error.includes('open');
+  const isCoverOpen = (error.includes('cover') || error.includes('drawer') || error.includes('door') || error.includes('tray')) && error.includes('open');
   const isTonerError = toner === 'Insert Toner' || toner === 'Replace Toner';
   const isPrinting = status === 'Printing';
   const isWarmup = status === 'Warmup';
@@ -50,17 +50,6 @@ const AnimatedPrinter = ({ printer }) => {
         {/* Shadow */}
         <ellipse cx="120" cy="180" rx="80" ry="12" fill="rgba(0,0,0,0.5)" />
 
-        {/* Paper Jam - crinkled paper sticking out top */}
-        <g style={{ 
-          opacity: activeState === 'jam' ? 1 : 0, 
-          transform: activeState === 'jam' ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'all 0.5s ease'
-        }}>
-          <path d="M 90 70 L 100 40 L 115 50 L 130 35 L 145 55 L 150 70 Z" fill="#ffb800" stroke="#ff3b6b" strokeWidth="2" />
-          <path d="M 100 55 L 110 45" stroke="#ff3b6b" strokeWidth="1" />
-          <path d="M 125 55 L 135 45" stroke="#ff3b6b" strokeWidth="1" />
-        </g>
-
         {/* Normal Paper printing animation */}
         <g className={activeState === 'printing' ? 'anim-print-large' : ''} style={{ opacity: activeState === 'printing' ? 1 : 0 }}>
           <path d="M 80 145 L 160 145 L 165 170 L 75 170 Z" fill="rgba(240,240,255,0.8)" stroke="rgba(255,255,255,0.2)" />
@@ -77,18 +66,32 @@ const AnimatedPrinter = ({ printer }) => {
         {/* Side Cover (Left) - animates open */}
         <g style={{ 
             transformOrigin: '50px 115px', 
-            transform: activeState === 'cover_open' ? 'rotate(-30deg)' : 'rotate(0deg)',
+            transform: activeState === 'cover_open' ? 'rotate(-30deg) translateX(-10px)' : 'rotate(0deg)',
             transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}>
-          <rect x="45" y="85" width="20" height="60" rx="4" fill="#1e3a5f" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-          {/* Inner mechanics visible when open */}
-          <rect x="52" y="95" width="6" height="40" rx="2" fill="#0d1220" opacity={activeState === 'cover_open' ? 1 : 0} />
-          <circle cx="55" cy="100" r="2" fill="#ff3b6b" opacity={activeState === 'cover_open' ? 1 : 0} />
-          <circle cx="55" cy="115" r="2" fill="#ffb800" opacity={activeState === 'cover_open' ? 1 : 0} />
+          {/* Inner mechanics visible when open (drawn underneath the cover itself) */}
+          <rect x="52" y="95" width="8" height="40" rx="2" fill="#0d1220" />
+          <circle cx="56" cy="100" r="3" fill="#ff3b6b" opacity={activeState === 'cover_open' ? 1 : 0} />
+          <circle cx="56" cy="115" r="3" fill="#ffb800" opacity={activeState === 'cover_open' ? 1 : 0} />
+          <circle cx="56" cy="125" r="2" fill="#00ff88" opacity={activeState === 'cover_open' ? 1 : 0} />
+          {/* Cover */}
+          <rect x="45" y="85" width="20" height="60" rx="4" fill="#1e3a5f" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
         </g>
 
         {/* Top Panel */}
         <path d="M 50 80 Q 50 55 70 55 L 170 55 Q 190 55 190 80 Z" fill="url(#topGrad)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+
+        {/* Paper Jam - crinkled paper sticking out top (moved AFTER Top Panel to ensure it sits on top) */}
+        <g style={{ 
+          opacity: activeState === 'jam' ? 1 : 0, 
+          transform: activeState === 'jam' ? 'translateY(0) scale(1.1)' : 'translateY(20px) scale(0.9)',
+          transformOrigin: '120px 70px',
+          transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }}>
+          <path d="M 80 65 L 90 20 L 110 35 L 130 15 L 150 40 L 160 65 Z" fill="#ffb800" stroke="#ff3b6b" strokeWidth="2" filter="url(#glowPrinter)" />
+          <path d="M 95 40 L 110 50" stroke="#ff3b6b" strokeWidth="2" />
+          <path d="M 125 35 L 140 45" stroke="#ff3b6b" strokeWidth="2" />
+        </g>
 
         {/* Control Panel Area */}
         <rect x="140" y="60" width="35" height="16" rx="4" fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
