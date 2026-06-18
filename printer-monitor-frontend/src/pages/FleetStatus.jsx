@@ -50,7 +50,7 @@ const FleetStatus = () => {
 
   const fetchPrinters = async () => {
     try {
-      const res = await axios.get('http://153.75.225.81:5000/api/printers');
+      const res = await axios.get('/api/printers');
       const enhancedPrinters = res.data.map(p => ({
         ...p,
         ...generateTelemetry(p.ip_address)

@@ -75,7 +75,7 @@ const HistoryModal = ({ printer, onClose }) => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/history`);
+        const response = await axios.get(`/api/printers/${printer.ip_address}/history`);
         // Sort chronologically first
         const chronologicalHistory = [...response.data].reverse();
         
@@ -168,7 +168,7 @@ const HistoryModal = ({ printer, onClose }) => {
                   async () => {
                     closeDialog();
                     try {
-                      await axios.delete(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/logs`);
+                      await axios.delete(`/api/printers/${printer.ip_address}/logs`);
                       showAlert('Logs Cleared', 'The logs have been successfully cleared.', 'success', onClose);
                     } catch(e) { showAlert('Error', 'Failed to clear logs.', 'danger'); }
                   }
@@ -187,7 +187,7 @@ const HistoryModal = ({ printer, onClose }) => {
                   async () => {
                     closeDialog();
                     try {
-                      await axios.delete(`http://153.75.225.81:5000/api/printers/${printer.ip_address}`);
+                      await axios.delete(`/api/printers/${printer.ip_address}`);
                       showAlert('Printer Deleted', 'The printer has been completely removed from the system.', 'success', onClose);
                     } catch(e) { showAlert('Error', 'Failed to delete printer.', 'danger'); }
                   }

@@ -29,7 +29,7 @@ const PrinterCalendar = () => {
         const startStr = `${firstDay.getFullYear()}-${String(firstDay.getMonth() + 1).padStart(2, '0')}-${String(firstDay.getDate()).padStart(2, '0')}`;
         const endStr = `${lastDay.getFullYear()}-${String(lastDay.getMonth() + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
 
-        const res = await axios.get(`http://153.75.225.81:5000/api/printers/${ip}/report`, {
+        const res = await axios.get(`/api/printers/${ip}/report`, {
           params: { startDate: startStr, endDate: endStr }
         });
         setReportData(res.data);

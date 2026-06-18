@@ -43,7 +43,7 @@ const Analytics = () => {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      let url = 'http://153.75.225.81:5000/api/analytics/errors?';
+      let url = '/api/analytics/errors?';
       if (startDate && endDate) url += `startDate=${startDate}&endDate=${endDate}&`;
       if (selectedIp) url += `ip=${selectedIp}&`;
       const res = await axios.get(url);

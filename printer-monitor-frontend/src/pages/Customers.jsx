@@ -38,7 +38,7 @@ const Customers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get('http://153.75.225.81:5000/api/customers');
+      const res = await axios.get('/api/customers');
       setCustomers(res.data);
     } catch (err) {
       console.error('Error fetching customers', err);
@@ -68,9 +68,9 @@ const Customers = () => {
     try {
       if (!newName.trim()) { setError('Customer name is required'); setSubmitting(false); return; }
       if (isEditMode) {
-        await axios.put(`http://153.75.225.81:5000/api/customers/${editingId}`, { name: newName, contact_info: newContact });
+        await axios.put(`/api/customers/${editingId}`, { name: newName, contact_info: newContact });
       } else {
-        await axios.post('http://153.75.225.81:5000/api/customers', { name: newName, contact_info: newContact });
+        await axios.post('/api/customers', { name: newName, contact_info: newContact });
       }
       await fetchCustomers();
       setIsModalOpen(false);

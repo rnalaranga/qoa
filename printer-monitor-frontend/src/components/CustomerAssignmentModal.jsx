@@ -16,11 +16,11 @@ const CustomerAssignmentModal = ({ printer, customers, onClose, onAssign }) => {
       let customerId = selectedCustomerId;
       if (isCreatingNew) {
         if (!newCustomerName.trim()) { setError('Customer name is required'); setLoading(false); return; }
-        const res = await axios.post('http://153.75.225.81:5000/api/customers', { name: newCustomerName });
+        const res = await axios.post('/api/customers', { name: newCustomerName });
         customerId = res.data.id;
       }
       if (!customerId) { setError('Please select or create a customer'); setLoading(false); return; }
-      await axios.put(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/assign`, { customer_id: customerId });
+      await axios.put(`/api/printers/${printer.ip_address}/assign`, { customer_id: customerId });
       onAssign();
       onClose();
     } catch (err) {
@@ -33,7 +33,7 @@ const CustomerAssignmentModal = ({ printer, customers, onClose, onAssign }) => {
   const handleUnassign = async () => {
     setLoading(true);
     try {
-      await axios.put(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/assign`, { customer_id: null });
+      await axios.put(`/api/printers/${printer.ip_address}/assign`, { customer_id: null });
       onAssign();
       onClose();
     } catch {

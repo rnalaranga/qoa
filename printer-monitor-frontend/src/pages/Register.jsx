@@ -17,7 +17,7 @@ const Register = () => {
     // Fetch customers so user can link their account
     const fetchCustomers = async () => {
       try {
-        const { data } = await axios.get('http://153.75.225.81:5000/api/customers');
+        const { data } = await axios.get('/api/customers');
         setCustomers(data);
       } catch (err) {
         console.error('Failed to load customers');

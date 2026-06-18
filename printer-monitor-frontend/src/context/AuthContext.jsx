@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const { data } = await axios.post('http://153.75.225.81:5000/api/auth/login', { username, password });
+      const { data } = await axios.post('/api/auth/login', { username, password });
       setUser(data);
       localStorage.setItem('userInfo', JSON.stringify(data));
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, password, customer_id) => {
     try {
-      const { data } = await axios.post('http://153.75.225.81:5000/api/auth/register', { username, password, customer_id });
+      const { data } = await axios.post('/api/auth/register', { username, password, customer_id });
       setUser(data);
       localStorage.setItem('userInfo', JSON.stringify(data));
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;

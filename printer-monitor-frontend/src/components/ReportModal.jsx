@@ -21,7 +21,7 @@ const ReportModal = ({ printer, onClose }) => {
     setError('');
     setLoading(true);
     try {
-      const res = await axios.get(`http://153.75.225.81:5000/api/printers/${printer.ip_address}/report`, {
+      const res = await axios.get(`/api/printers/${printer.ip_address}/report`, {
         params: { startDate, endDate }
       });
       setReportData(res.data);
