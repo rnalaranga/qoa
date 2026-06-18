@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Printer, Lock, User, UserPlus, AlertCircle, Building } from 'lucide-react';
+import { useTheme } from '../ThemeContext';
+import { Printer, Lock, User, UserPlus, AlertCircle, Building, Sun, Moon } from 'lucide-react';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -11,6 +12,7 @@ const Register = () => {
   const [customers, setCustomers] = useState([]);
   const [error, setError] = useState('');
   const { register } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,12 +45,22 @@ const Register = () => {
 
   return (
     <div style={{
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(circle at 50% -20%, #1e293b, #0f172a 60%, #020617)'
+      background: 'var(--bg-main)',
+      position: 'relative',
+      padding: '2rem 1rem'
     }}>
+      <button 
+        className="icon-btn" 
+        onClick={toggleTheme} 
+        style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}
+        title="Toggle Theme"
+      >
+        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: 400,

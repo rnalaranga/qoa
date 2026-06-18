@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Printer, Lock, User, LogIn, AlertCircle } from 'lucide-react';
+import { useTheme } from '../ThemeContext';
+import { Printer, Lock, User, LogIn, AlertCircle, Sun, Moon } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,12 +25,21 @@ const Login = () => {
 
   return (
     <div style={{
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(circle at 50% -20%, #1e293b, #0f172a 60%, #020617)'
+      background: 'var(--bg-main)',
+      position: 'relative'
     }}>
+      <button 
+        className="icon-btn" 
+        onClick={toggleTheme} 
+        style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}
+        title="Toggle Theme"
+      >
+        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: 400,
