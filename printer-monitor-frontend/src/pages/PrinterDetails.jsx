@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText, Calendar } from 'lucide-react';
+import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText, Calendar, AlertTriangle } from 'lucide-react';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ReportModal from '../components/ReportModal';
 

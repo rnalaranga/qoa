@@ -222,10 +222,8 @@ const FleetStatus = () => {
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                           <button 
                             className="icon-btn" 
-                            title={(isOffline || isError) ? "Unavailable in Offline/Error state" : "View Details"} 
-                            onClick={() => { if (!isOffline && !isError) navigate(`/printer/${p.ip_address}`) }}
-                            style={{ opacity: (isOffline || isError) ? 0.3 : 1, cursor: (isOffline || isError) ? 'not-allowed' : 'pointer' }}
-                            disabled={isOffline || isError}
+                            title="View Details" 
+                            onClick={() => navigate(`/printer/${p.ip_address}`)}
                           >
                             <ArrowRight size={14} />
                           </button>
