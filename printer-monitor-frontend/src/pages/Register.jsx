@@ -108,7 +108,7 @@ const Register = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 style={{
                   width: '100%', padding: '0.875rem 1rem 0.875rem 2.8rem',
-                  background: 'rgba(15,23,42,0.6)', border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-input)', border: '1px solid var(--border-subtle)',
                   borderRadius: 12, color: 'var(--text-main)', fontSize: '0.9rem',
                   outline: 'none', transition: 'all 0.3s'
                 }}
@@ -128,7 +128,7 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
                   width: '100%', padding: '0.875rem 1rem 0.875rem 2.8rem',
-                  background: 'rgba(15,23,42,0.6)', border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-input)', border: '1px solid var(--border-subtle)',
                   borderRadius: 12, color: 'var(--text-main)', fontSize: '0.9rem',
                   outline: 'none', transition: 'all 0.3s'
                 }}
@@ -146,7 +146,7 @@ const Register = () => {
                 onChange={(e) => setCustomerId(e.target.value)}
                 style={{
                   width: '100%', padding: '0.875rem 1rem 0.875rem 2.8rem',
-                  background: 'rgba(15,23,42,0.6)', border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-input)', border: '1px solid var(--border-subtle)',
                   borderRadius: 12, color: 'var(--text-main)', fontSize: '0.9rem',
                   outline: 'none', transition: 'all 0.3s', appearance: 'none'
                 }}
