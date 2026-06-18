@@ -2,13 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Filter, Server, Activity, ArrowRight, Printer, AlertTriangle, ShieldCheck, Download, RefreshCw } from 'lucide-react';
 
-const getStatusStyle = (printer) => {
-  if (printer.printer_status === 'Stopped' || printer.printer_status === 'Offline')
-    return { color: 'var(--neon-rose)', label: printer.printer_status, cls: 'badge-rose' };
-  if (printer.printer_status === 'Warning' || (printer.error_status && printer.error_status !== 'OK' && printer.printer_status !== 'Stopped'))
-    return { color: 'var(--neon-amber)', label: 'Warning', cls: 'badge-amber' };
-  if (printer.printer_status === 'Printing' || printer.printer_status === 'Warmup')
-    return { color: 'var(--neon-violet)', label: printer.printer_status, cls: 'badge-violet' };
+const getPrinterState = (p) => {
+  if (p.online_status === 'Removed' || p.is_stale || p.printer_status === 'Offline') return 'Offline';
+  
+  const isTonerError = p.toner_level === 'Insert Toner' || p.toner_level === 'Replace Toner';
+  const hasSpecificError = p.error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(p.error_status).trim());
+  const isMaintenance = hasSpecificError && String(p.error_status).toLowerCase().includes('maintenance');
+
+  if (hasSpecificError || p.printer_status === 'Stopped' || p.printer_status === 'Error' || p.printer_status === 'Warning' || isTonerError) {
+    if (isMaintenance) return 'Warning';
+    return 'Error';
+  }
+  if (p.printer_status === 'Printing' || p.printer_status === 'Warmup') return 'Printing';
+  return 'Online';
+};
+
+const getStatusStyle = (state) => {
+  if (state === 'Offline') return { color: 'var(--neon-rose)', label: 'Offline', cls: 'badge-rose' };
+  if (state === 'Error') return { color: 'var(--neon-rose)', label: 'Error', cls: 'badge-rose' };
+  if (state === 'Warning') return { color: 'var(--neon-amber)', label: 'Warning', cls: 'badge-amber' };
+  if (state === 'Printing') return { color: 'var(--neon-violet)', label: 'Printing', cls: 'badge-violet' };
   return { color: 'var(--neon-emerald)', label: 'OK', cls: 'badge-emerald' };
 };
 
@@ -130,16 +143,18 @@ const FleetStatus = () => {
               </thead>
               <tbody>
                 {filtered.map((p, idx) => {
-                  const { cls, label, color } = getStatusStyle(p);
+                  const state = getPrinterState(p);
+                  const { cls, label, color } = getStatusStyle(state);
                   const tonerNum = parseInt(p.toner_level?.replace('%', '')) || 0;
                   const isTonerError = p.toner_level === 'Insert Toner' || p.toner_level === 'Replace Toner';
                   const tonerColor = isTonerError || tonerNum <= 10 ? 'var(--neon-rose)' : tonerNum <= 25 ? 'var(--neon-amber)' : 'var(--neon-emerald)';
-                  const isOffline = p.printer_status === 'Stopped' || p.printer_status === 'Offline';
+                  const isOffline = state === 'Offline';
+                  const isError = state === 'Error';
 
                   return (
-                    <tr key={p.ip_address} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <tr key={p.ip_address} style={{ borderBottom: '1px solid var(--border-subtle)', opacity: isOffline ? 0.6 : 1 }}>
                       {/* Device / Network */}
-                      <td style={{ padding: '1.25rem 1.5rem', borderLeft: (label === 'Offline' || label === 'Warning') ? `2px solid ${color}` : '2px solid transparent' }}>
+                      <td style={{ padding: '1.25rem 1.5rem', borderLeft: (label === 'Offline' || label === 'Warning' || label === 'Error') ? `2px solid ${color}` : '2px solid transparent' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                           <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-subtle)' }}>
                             <Printer size={18} style={{ color: 'var(--neon-cyan)' }} />
@@ -190,18 +205,28 @@ const FleetStatus = () => {
                       <td style={{ padding: '1.25rem 1.5rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem' }}>
                           <span className={`badge ${cls}`}>{label}</span>
-                          {p.error_status && p.error_status !== 'OK' && (
+                          {p.is_stale ? (
                             <div style={{ fontSize: '0.7rem', color: 'var(--neon-rose)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                              <AlertTriangle size={10} /> Agent Not Running
+                            </div>
+                          ) : p.error_status && p.error_status !== 'OK' && p.error_status !== 'None' ? (
+                            <div style={{ fontSize: '0.7rem', color: (state === 'Warning' ? 'var(--neon-amber)' : 'var(--neon-rose)'), fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                               <AlertTriangle size={10} /> {p.error_status}
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </td>
 
                       {/* Actions */}
                       <td style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                          <button className="icon-btn" title="View Details" onClick={() => navigate(`/printer/${p.ip_address}`)}>
+                          <button 
+                            className="icon-btn" 
+                            title={(isOffline || isError) ? "Unavailable in Offline/Error state" : "View Details"} 
+                            onClick={() => { if (!isOffline && !isError) navigate(`/printer/${p.ip_address}`) }}
+                            style={{ opacity: (isOffline || isError) ? 0.3 : 1, cursor: (isOffline || isError) ? 'not-allowed' : 'pointer' }}
+                            disabled={isOffline || isError}
+                          >
                             <ArrowRight size={14} />
                           </button>
                         </div>
