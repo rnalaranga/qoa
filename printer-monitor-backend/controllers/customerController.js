@@ -137,6 +137,38 @@ const updateCustomer = async (req, res) => {
             return res.status(404).json({ message: 'Customer not found' });
         }
 
+        if (req.body.username && req.body.password) {
+            const { username, password } = req.body;
+            
+            // Check if username already exists
+            const [userExists] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+            
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            if (userExists.length > 0) {
+                if (String(userExists[0].customer_id) === String(id)) {
+                    // Update password
+                    await db.query('UPDATE users SET password_hash = ? WHERE id = ?', [hashedPassword, userExists[0].id]);
+                } else {
+                    return res.status(200).json({ message: 'Customer updated, but Username belongs to someone else' });
+                }
+            } else {
+                // Check if customer already has a user account with a different username
+                const [customerUsers] = await db.query('SELECT * FROM users WHERE customer_id = ?', [id]);
+                if (customerUsers.length > 0) {
+                    // Update username and password
+                    await db.query('UPDATE users SET username = ?, password_hash = ? WHERE id = ?', [username, hashedPassword, customerUsers[0].id]);
+                } else {
+                    // Insert new user
+                    await db.query(
+                        'INSERT INTO users (username, password_hash, role, customer_id) VALUES (?, ?, ?, ?)',
+                        [username, hashedPassword, 'customer', id]
+                    );
+                }
+            }
+        }
+
         res.status(200).json({ message: 'Customer updated successfully' });
     } catch (error) {
         console.error('Error updating customer:', error);

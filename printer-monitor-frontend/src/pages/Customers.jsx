@@ -70,7 +70,7 @@ const Customers = () => {
     try {
       if (!newName.trim()) { setError('Customer name is required'); setSubmitting(false); return; }
       if (isEditMode) {
-        await axios.put(`/api/customers/${editingId}`, { name: newName, contact_info: newContact });
+        await axios.put(`/api/customers/${editingId}`, { name: newName, contact_info: newContact, username: newUsername, password: newPassword });
       } else {
         await axios.post('/api/customers', { name: newName, contact_info: newContact, username: newUsername, password: newPassword });
       }
@@ -347,31 +347,31 @@ const Customers = () => {
                   />
                 </div>
 
-                {!isEditMode && (
-                  <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
-                    <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: 'var(--neon-cyan)' }}>Create User Account (Optional)</h4>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label className="form-label">Username</label>
-                      <input
-                        type="text"
-                        value={newUsername}
-                        onChange={e => setNewUsername(e.target.value)}
-                        placeholder="customer_admin"
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label">Password</label>
-                      <input
-                        type="password"
-                        value={newPassword}
-                        onChange={e => setNewPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="form-input"
-                      />
-                    </div>
+                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
+                  <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: 'var(--neon-cyan)' }}>
+                    {isEditMode ? 'Create / Update User Account (Optional)' : 'Create User Account (Optional)'}
+                  </h4>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label className="form-label">Username</label>
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={e => setNewUsername(e.target.value)}
+                      placeholder="customer_admin"
+                      className="form-input"
+                    />
                   </div>
-                )}
+                  <div>
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      placeholder={isEditMode ? 'Leave blank to keep unchanged' : '••••••••'}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <button type="button" className="btn-ghost" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>
