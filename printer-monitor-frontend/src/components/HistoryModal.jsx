@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { X, Loader2, Printer, TrendingDown, FileText } from 'lucide-react';
 import GlassDialog from './GlassDialog';
+import AnimatedPrinter from './AnimatedPrinter';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -201,6 +202,11 @@ const HistoryModal = ({ printer, onClose }) => {
         </div>
 
         <div className="modal-body">
+          {/* Animated Printer Graphic */}
+          <div style={{ marginBottom: '2.5rem', marginTop: '1rem' }}>
+            <AnimatedPrinter printer={printer} />
+          </div>
+
           {/* Summary chips */}
           {!loading && data.length > 0 && (
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
