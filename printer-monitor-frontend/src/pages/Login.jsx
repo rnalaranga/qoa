@@ -29,7 +29,7 @@ const Login = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--bg-main)',
+      background: 'var(--bg-base)',
       position: 'relative'
     }}>
       <button 
@@ -58,7 +58,7 @@ const Login = () => {
           <Printer size={32} color="#fff" />
         </div>
         
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-bright)', marginBottom: '0.5rem' }}>
           Welcome Back
         </h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '0.9rem' }}>
@@ -88,7 +88,7 @@ const Login = () => {
                 style={{
                   width: '100%', padding: '0.875rem 1rem 0.875rem 2.8rem',
                   background: 'var(--bg-input)', border: '1px solid var(--border-subtle)',
-                  borderRadius: 12, color: 'var(--text-main)', fontSize: '0.9rem',
+                  borderRadius: 12, color: 'var(--text-primary)', fontSize: '0.9rem',
                   outline: 'none', transition: 'all 0.3s'
                 }}
                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-cyan)'}
@@ -108,7 +108,7 @@ const Login = () => {
                 style={{
                   width: '100%', padding: '0.875rem 1rem 0.875rem 2.8rem',
                   background: 'var(--bg-input)', border: '1px solid var(--border-subtle)',
-                  borderRadius: 12, color: 'var(--text-main)', fontSize: '0.9rem',
+                  borderRadius: 12, color: 'var(--text-primary)', fontSize: '0.9rem',
                   outline: 'none', transition: 'all 0.3s'
                 }}
                 onFocus={(e) => e.target.style.borderColor = 'var(--neon-cyan)'}
