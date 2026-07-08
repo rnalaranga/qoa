@@ -162,7 +162,7 @@ const FleetStatus = () => {
                               {p.qoa_num || 'N/A'}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                              <Server size={12} /> {p.ip_address} • {p.mac}
+                              <Server size={12} /> {p.ip_address} {p.mac_address ? `• ${p.mac_address}` : ''}
                             </div>
                           </div>
                         </div>
@@ -177,7 +177,7 @@ const FleetStatus = () => {
                           </div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                             <Activity size={13} style={{ color: 'var(--neon-cyan)' }} />
-                            Up: {p.uptime}
+                            Up: {p.uptime || 'Unknown'}
                           </div>
                         </div>
                       </td>
@@ -185,7 +185,25 @@ const FleetStatus = () => {
                       {/* Consumables */}
                       <td style={{ padding: '1.25rem 1.5rem' }}>
                         <TonerBar tonerLevelStr={p.toner_level} isOffline={isOffline} />
-                        <div style={{ fontSize: '0.7rem', color: isOffline ? 'var(--text-muted)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        
+                        {p.tray_levels && (
+                          <div style={{ marginTop: '0.4rem', display: 'flex', gap: '0.5rem' }}>
+                            {JSON.parse(p.tray_levels).tray1 !== undefined && (
+                              <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                                <div style={{ width: 4, height: 4, borderRadius: '50%', background: JSON.parse(p.tray_levels).tray1 <= 0 ? 'var(--neon-rose)' : 'var(--text-muted)' }} />
+                                T1: {JSON.parse(p.tray_levels).tray1}%
+                              </div>
+                            )}
+                            {JSON.parse(p.tray_levels).tray2 !== undefined && (
+                              <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                                <div style={{ width: 4, height: 4, borderRadius: '50%', background: JSON.parse(p.tray_levels).tray2 <= 0 ? 'var(--neon-rose)' : 'var(--text-muted)' }} />
+                                T2: {JSON.parse(p.tray_levels).tray2}%
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div style={{ fontSize: '0.7rem', color: isOffline ? 'var(--text-muted)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
                           Pages: {p.pages_printed && !isNaN(parseInt(p.pages_printed)) ? parseInt(p.pages_printed).toLocaleString() : '—'}
                           {isOffline && <AlertTriangle size={10} style={{ color: 'var(--neon-amber)' }} title="Last known reading (Offline)" />}
                         </div>

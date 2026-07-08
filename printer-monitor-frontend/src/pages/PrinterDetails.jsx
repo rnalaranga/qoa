@@ -241,16 +241,49 @@ const PrinterDetails = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>MAC Address</span>
-                <span style={{ color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>00:1A:2B:3C:4D:5E</span>
+                <span style={{ color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>{printer.mac_address || 'Unknown'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Firmware</span>
-                <span style={{ color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>v2.4.1</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>System Uptime</span>
+                <span style={{ color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>{printer.uptime || 'Unknown'}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Last Sync</span>
-                <span style={{ color: 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem' }}>Just now</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Drum Life</span>
+                <span style={{ color: printer.drum_level && parseInt(printer.drum_level) <= 10 ? 'var(--neon-rose)' : 'var(--text-primary)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem', fontWeight: 600 }}>
+                  {printer.drum_level || 'N/A'}
+                </span>
               </div>
+              
+              {/* Paper Trays */}
+              {printer.tray_levels && (
+                <div style={{ marginTop: '0.5rem', background: 'var(--bg-card)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.75rem' }}>Paper Trays</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {JSON.parse(printer.tray_levels).tray1 !== undefined && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.2rem' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Tray 1</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{JSON.parse(printer.tray_levels).tray1}%</span>
+                        </div>
+                        <div style={{ width: '100%', height: 6, background: 'var(--bg-input)', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', background: JSON.parse(printer.tray_levels).tray1 <= 0 ? 'var(--neon-rose)' : 'var(--neon-cyan)', width: `${JSON.parse(printer.tray_levels).tray1}%` }} />
+                        </div>
+                      </div>
+                    )}
+                    {JSON.parse(printer.tray_levels).tray2 !== undefined && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.2rem' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Tray 2</span>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{JSON.parse(printer.tray_levels).tray2}%</span>
+                        </div>
+                        <div style={{ width: '100%', height: 6, background: 'var(--bg-input)', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', background: JSON.parse(printer.tray_levels).tray2 <= 0 ? 'var(--neon-rose)' : 'var(--neon-emerald)', width: `${JSON.parse(printer.tray_levels).tray2}%` }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

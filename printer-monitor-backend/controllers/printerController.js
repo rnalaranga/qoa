@@ -13,7 +13,11 @@ const updatePrinterStatus = async (req, res) => {
             pages_printed,
             printer_status,
             error_status,
-            online_status
+            online_status,
+            uptime,
+            mac_address,
+            drum_level,
+            tray_levels
         } = req.body;
 
         if (!ip_address) {
@@ -52,9 +56,10 @@ const updatePrinterStatus = async (req, res) => {
             await db.query(
                 `UPDATE printer_status SET 
                     qoa_num = ?, model = ?, toner_level = ?, pages_printed = ?, 
-                    printer_status = ?, error_status = ?, online_status = ?, last_updated = NOW()
+                    printer_status = ?, error_status = ?, online_status = ?, last_updated = NOW(),
+                    uptime = COALESCE(?, uptime), mac_address = COALESCE(?, mac_address), drum_level = COALESCE(?, drum_level), tray_levels = COALESCE(?, tray_levels)
                  WHERE ip_address = ?`,
-                [qoa_num, model, finalToner, finalPages, printer_status, error_status, online_status, ip_address]
+                [qoa_num, model, finalToner, finalPages, printer_status, error_status, online_status, uptime, mac_address, drum_level, tray_levels, ip_address]
             );
             
             // Update the variables so the history log uses the correct values
@@ -64,9 +69,9 @@ const updatePrinterStatus = async (req, res) => {
             // Insert new printer status
             await db.query(
                 `INSERT INTO printer_status 
-                    (qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, online_status) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                [qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, online_status]
+                    (qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, online_status, uptime, mac_address, drum_level, tray_levels) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, online_status, uptime, mac_address, drum_level, tray_levels]
             );
         }
 
@@ -74,9 +79,9 @@ const updatePrinterStatus = async (req, res) => {
             // Insert into history logs
             await db.query(
                 `INSERT INTO printer_logs 
-                    (ip_address, toner_level, pages_printed, printer_status, error_status, online_status) 
-                 VALUES (?, ?, ?, ?, ?, ?)`,
-                [ip_address, toner_level, pages_printed, printer_status, error_status, online_status]
+                    (ip_address, toner_level, pages_printed, printer_status, error_status, online_status, uptime, mac_address, drum_level, tray_levels) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [ip_address, toner_level, pages_printed, printer_status, error_status, online_status, uptime, mac_address, drum_level, tray_levels]
             );
         }
 
