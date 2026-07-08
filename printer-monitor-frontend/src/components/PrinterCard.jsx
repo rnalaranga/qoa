@@ -71,12 +71,95 @@ const PrinterIllustration = ({ isPrinting, statusColor }) => (
   </svg>
 );
 
-/* ── Semi-circle Toner Gauge ─────────────────────────────────── */
-const TonerGauge = ({ percentage, color, isOffline }) => {
+/* ── Semi-circle Toner Gauge (Mono & CMYK) ─────────────────────────────────── */
+const TonerGauge = ({ tonerStr, color, isOffline }) => {
+  let isColor = false;
+  let toners = [];
+  
+  if (tonerStr && tonerStr.startsWith('{')) {
+    try {
+      const data = JSON.parse(tonerStr);
+      if (data.type === 'color') {
+        isColor = true;
+        toners = [
+          { label: 'C', val: data.c, color: '#00FFFF' },
+          { label: 'M', val: data.m, color: '#FF00FF' },
+          { label: 'Y', val: data.y, color: '#eab308' },
+          { label: 'K', val: data.k, color: '#64748b' }
+        ];
+      }
+    } catch (e) {}
+  }
+
+  if (isColor) {
+    const renderArc = (percentage, radius, strokeColor, label, isLow) => {
+      const circum = radius * Math.PI;
+      const offset = circum - (percentage / 100) * circum;
+      
+      return (
+        <g key={label}>
+          <path d={`M ${50 - radius} 50 A ${radius} ${radius} 0 0 1 ${50 + radius} 50`} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" strokeLinecap="round" />
+          <path d={`M ${50 - radius} 50 A ${radius} ${radius} 0 0 1 ${50 + radius} 50`} fill="none" stroke={strokeColor + '20'} strokeWidth="6" strokeLinecap="round" />
+          <path
+            d={`M ${50 - radius} 50 A ${radius} ${radius} 0 0 1 ${50 + radius} 50`}
+            fill="none"
+            stroke={strokeColor}
+            strokeWidth="5"
+            strokeLinecap="round"
+            style={{
+              strokeDasharray: circum,
+              strokeDashoffset: offset,
+              transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              filter: `drop-shadow(0 0 3px ${strokeColor}80)`
+            }}
+          />
+        </g>
+      );
+    };
+
+    return (
+      <div className="gauge-container-compact" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <svg viewBox="0 0 100 55" className="gauge-svg-compact" style={{ position: 'relative' }}>
+          {toners.map((t, i) => {
+            const isErr = t.val < 0;
+            const pct = isErr ? 0 : t.val;
+            const radius = 38 - (i * 8); // radii: 38, 30, 22, 14
+            return renderArc(pct, radius, t.color, t.label, isErr || pct <= 10);
+          })}
+          <circle cx="50" cy="48" r="3" fill="#ffffff" style={{ opacity: 0.5 }} />
+        </svg>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', width: '100%', marginTop: '4px' }}>
+          {toners.map(t => {
+            const isLow = t.val <= 10;
+            return (
+              <div key={t.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
+                <span style={{ fontSize: '10px', color: t.color, fontWeight: '900', textShadow: `0 0 5px ${t.color}80` }}>{t.label}</span>
+                <span style={{ fontSize: '9px', color: isLow ? '#ff3b6b' : 'var(--text-bright)', fontWeight: '700', marginTop: '2px' }}>
+                  {t.val < 0 ? 'ERR' : t.val + '%'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        {isOffline && (
+          <div style={{ position: 'absolute', top: 0, right: 0 }}>
+            <AlertTriangle size={10} style={{ color: 'var(--neon-amber)' }} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Mono Toner Gauge
+  const percentage = parseInt(tonerStr?.replace('%', '')) || 0;
+  const isTonerError = tonerStr === 'Insert Toner' || tonerStr === 'Replace Toner' || tonerStr === '-1';
+  const displayPct = isTonerError ? 0 : percentage;
+  
   const radius = 38;
   const circumference = radius * Math.PI;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
-  const isLow = percentage <= 20;
+  const strokeDashoffset = circumference - (displayPct / 100) * circumference;
+  const isLow = displayPct <= 20 || isTonerError;
 
   return (
     <div className="gauge-container-compact">
@@ -107,7 +190,7 @@ const TonerGauge = ({ percentage, color, isOffline }) => {
       </svg>
 
       <div className="gauge-value-compact" style={{ color, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
-        {percentage}%
+        {isTonerError ? 'ERR' : percentage + '%'}
         {isOffline && <AlertTriangle size={10} style={{ color: 'var(--neon-amber)', filter: 'none' }} title="Last known reading (Offline)" />}
       </div>
       <div className="gauge-label" style={{ color: isLow ? color : undefined }}>Toner</div>
@@ -119,8 +202,15 @@ const TonerGauge = ({ percentage, color, isOffline }) => {
 const PrinterCard = ({ printer, onClick, onAssign }) => {
   const { qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, customer_id, online_status, is_stale } = printer;
 
-  const tonerNum = parseInt(toner_level?.replace('%', '')) || 0;
-  const isTonerError = toner_level === 'Insert Toner' || toner_level === 'Replace Toner';
+  let isTonerError = false;
+  if (toner_level && toner_level.startsWith('{')) {
+    try {
+      const data = JSON.parse(toner_level);
+      if (data.c <= 0 || data.m <= 0 || data.y <= 0 || data.k <= 0) isTonerError = true;
+    } catch(e) {}
+  } else {
+    isTonerError = toner_level === 'Insert Toner' || toner_level === 'Replace Toner' || toner_level === '-1';
+  }
 
   const isRemoved = online_status === 'Removed';
   const hasSpecificError = error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(error_status).trim());
@@ -218,7 +308,7 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
           <PrinterIllustration isPrinting={isPrinting} statusColor={bulbColor} />
         </div>
         <div className="compact-gauge-wrapper">
-          <TonerGauge percentage={isTonerError ? 0 : tonerNum} color={tonerColor} isOffline={!isConnected} />
+          <TonerGauge tonerStr={toner_level} color={tonerColor} isOffline={!isConnected} />
         </div>
       </div>
 

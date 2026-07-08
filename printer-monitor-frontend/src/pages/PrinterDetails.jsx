@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Thermometer, FileText, Calendar, AlertTriangle } from 'lucide-react';
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ReportModal from '../components/ReportModal';
+import TonerBar from '../components/TonerBar';
 
 const getStatusStyle = (printer) => {
   if (!printer) return { color: 'var(--neon-emerald)', label: 'Loading', cls: 'badge-emerald' };
@@ -129,10 +130,6 @@ const PrinterDetails = () => {
   const { cls, label, color } = getStatusStyle(printer);
   const hasSpecificError = printer.error_status && !['-', 'OK', 'None', '', '0', 'null', 'undefined', 'Normal', 'Ready'].includes(String(printer.error_status).trim());
   const isCritical = printer.printer_status === 'Stopped' || printer.printer_status === 'Offline';
-  
-  const tonerNum = parseInt(printer.toner_level?.replace('%', '')) || 0;
-  const isTonerError = printer.toner_level === 'Insert Toner' || printer.toner_level === 'Replace Toner';
-  const tonerColor = isTonerError || tonerNum <= 10 ? 'var(--neon-rose)' : tonerNum <= 25 ? 'var(--neon-amber)' : 'var(--neon-emerald)';
 
   // Using real data from backend
   const printHistoryData = history.length > 0 ? history : [];
@@ -174,14 +171,9 @@ const PrinterDetails = () => {
               </span>
             </div>
             <div style={{ flex: 1, padding: '1.5rem', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Toner Level</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ fontSize: '1.8rem', fontWeight: 800, color: tonerColor, fontFamily: 'JetBrains Mono, monospace' }}>
-                  {isTonerError ? 'ERR' : `${tonerNum}%`}
-                </span>
-                <div style={{ flex: 1, height: 6, background: 'var(--border-subtle)', borderRadius: 99, overflow: 'hidden' }}>
-                  <div style={{ width: `${isTonerError ? 0 : tonerNum}%`, height: '100%', background: tonerColor, borderRadius: 99, boxShadow: `0 0 6px ${tonerColor}` }} />
-                </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Toner Level</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <TonerBar tonerLevelStr={printer.toner_level} isOffline={isCritical} />
               </div>
             </div>
           </div>

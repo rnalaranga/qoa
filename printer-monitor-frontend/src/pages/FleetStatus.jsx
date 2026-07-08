@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Filter, Server, Activity, ArrowRight, Printer, AlertTriangle, ShieldCheck, Download, RefreshCw } from 'lucide-react';
+import TonerBar from '../components/TonerBar';
 
 const getPrinterState = (p) => {
   if (p.online_status === 'Removed' || p.is_stale || p.printer_status === 'Offline') return 'Offline';
@@ -145,9 +146,6 @@ const FleetStatus = () => {
                 {filtered.map((p, idx) => {
                   const state = getPrinterState(p);
                   const { cls, label, color } = getStatusStyle(state);
-                  const tonerNum = parseInt(p.toner_level?.replace('%', '')) || 0;
-                  const isTonerError = p.toner_level === 'Insert Toner' || p.toner_level === 'Replace Toner';
-                  const tonerColor = isTonerError || tonerNum <= 10 ? 'var(--neon-rose)' : tonerNum <= 25 ? 'var(--neon-amber)' : 'var(--neon-emerald)';
                   const isOffline = state === 'Offline';
                   const isError = state === 'Error';
 
@@ -186,15 +184,7 @@ const FleetStatus = () => {
 
                       {/* Consumables */}
                       <td style={{ padding: '1.25rem 1.5rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
-                          <div style={{ width: 60, height: 5, background: 'var(--border-subtle)', borderRadius: 99, overflow: 'hidden' }}>
-                            <div style={{ width: `${isTonerError ? 0 : tonerNum}%`, height: '100%', background: tonerColor, borderRadius: 99, boxShadow: `0 0 6px ${tonerColor}` }} />
-                          </div>
-                          <span style={{ color: tonerColor, fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                            {isTonerError ? 'ERR' : `${tonerNum}%`}
-                            {isOffline && <AlertTriangle size={11} style={{ color: 'var(--neon-amber)' }} title="Last known reading (Offline)" />}
-                          </span>
-                        </div>
+                        <TonerBar tonerLevelStr={p.toner_level} isOffline={isOffline} />
                         <div style={{ fontSize: '0.7rem', color: isOffline ? 'var(--text-muted)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                           Pages: {p.pages_printed && !isNaN(parseInt(p.pages_printed)) ? parseInt(p.pages_printed).toLocaleString() : '—'}
                           {isOffline && <AlertTriangle size={10} style={{ color: 'var(--neon-amber)' }} title="Last known reading (Offline)" />}

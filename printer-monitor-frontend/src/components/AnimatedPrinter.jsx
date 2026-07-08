@@ -8,7 +8,17 @@ const AnimatedPrinter = ({ printer }) => {
   const isOffline = printer.is_stale || status === 'Offline' || printer.online_status === 'Removed';
   const isJam = error.includes('jam');
   const isCoverOpen = (error.includes('cover') || error.includes('drawer') || error.includes('door') || error.includes('tray')) && error.includes('open');
-  const isTonerError = toner === 'Insert Toner' || toner === 'Replace Toner';
+  
+  let isTonerError = false;
+  if (toner && toner.startsWith('{')) {
+    try {
+      const data = JSON.parse(toner);
+      if (data.c <= 0 || data.m <= 0 || data.y <= 0 || data.k <= 0) isTonerError = true;
+    } catch(e) {}
+  } else {
+    isTonerError = toner === 'Insert Toner' || toner === 'Replace Toner' || toner === '-1';
+  }
+
   const isPrinting = status === 'Printing';
   const isWarmup = status === 'Warmup';
   
