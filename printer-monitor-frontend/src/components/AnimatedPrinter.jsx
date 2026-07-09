@@ -21,6 +21,7 @@ const AnimatedPrinter = ({ printer }) => {
 
   const isPrinting = status === 'Printing';
   const isWarmup = status === 'Warmup';
+  const isColor = toner && toner.includes('"type":"color"');
   
   // Decide active state (Priority matters)
   let activeState = 'normal';
@@ -48,6 +49,12 @@ const AnimatedPrinter = ({ printer }) => {
             <stop offset="0%" stopColor="#1e3a5f" />
             <stop offset="100%" stopColor="#2a1a4a" />
           </linearGradient>
+          <linearGradient id="cmykGradLarge" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#00FFFF" />
+            <stop offset="33%" stopColor="#FF00FF" />
+            <stop offset="66%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#1a2540" />
+          </linearGradient>
           <filter id="glowPrinter">
             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
             <feMerge>
@@ -70,6 +77,10 @@ const AnimatedPrinter = ({ printer }) => {
         {/* Printer Main Body */}
         <rect x="50" y="80" width="140" height="70" rx="12" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
         
+        {isColor && (
+          <rect x="175" y="85" width="5" height="25" rx="2.5" fill="url(#cmykGradLarge)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        )}
+        
         {/* Output Tray */}
         <path d="M 65 140 L 175 140 L 180 165 L 60 165 Z" fill="#151b2b" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
 
@@ -89,7 +100,7 @@ const AnimatedPrinter = ({ printer }) => {
         </g>
 
         {/* Top Panel */}
-        <path d="M 50 80 Q 50 55 70 55 L 170 55 Q 190 55 190 80 Z" fill="url(#topGrad)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+        <path d="M 50 80 Q 50 55 70 55 L 170 55 Q 190 55 190 80 Z" fill={isColor ? "url(#cmykGradLarge)" : "url(#topGrad)"} stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" opacity={isColor ? "0.8" : "1"} />
 
         {/* Paper Jam - crinkled paper sticking out top (moved AFTER Top Panel to ensure it sits on top) */}
         <g style={{ 

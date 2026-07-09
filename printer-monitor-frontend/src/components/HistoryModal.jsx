@@ -14,6 +14,7 @@ import {
 import { X, Loader2, Printer, TrendingDown, FileText } from 'lucide-react';
 import GlassDialog from './GlassDialog';
 import AnimatedPrinter from './AnimatedPrinter';
+import { TonerGauge } from './PrinterCard';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -215,14 +216,16 @@ const HistoryModal = ({ printer, onClose }) => {
                 background: 'var(--neon-cyan-dim)',
                 border: '1px solid rgba(0,212,255,0.15)',
                 borderRadius: 12,
-                display: 'flex', alignItems: 'center', gap: '0.75rem'
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                position: 'relative'
               }}>
-                <TrendingDown size={20} style={{ color: 'var(--neon-cyan)' }} />
-                <div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase' }}>Current Toner</div>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--neon-cyan)', fontFamily: 'JetBrains Mono, monospace' }}>
-                    {latestToner}%
-                  </div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', position: 'absolute', top: '0.875rem', left: '1rem' }}>Current Toner</div>
+                <div style={{ transform: 'scale(1.2)', marginTop: '1rem' }}>
+                  <TonerGauge 
+                    tonerStr={printer.toner_level} 
+                    color="var(--neon-cyan)" 
+                    isOffline={printer.printer_status === 'Offline' || printer.is_stale} 
+                  />
                 </div>
               </div>
               <div style={{
