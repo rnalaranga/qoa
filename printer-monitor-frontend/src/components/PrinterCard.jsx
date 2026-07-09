@@ -367,7 +367,6 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
           )}
         </div>
       </div>
-      </div>
     </div>
   );
 };
