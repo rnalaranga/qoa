@@ -5,6 +5,7 @@ import { ArrowLeft, Printer, Activity, Wrench, ShieldAlert, Cpu, Settings, Therm
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ReportModal from '../components/ReportModal';
 import TonerBar from '../components/TonerBar';
+import { PrinterIllustration, TonerGauge } from '../components/PrinterCard';
 
 const getStatusStyle = (printer) => {
   if (!printer) return { color: 'var(--neon-emerald)', label: 'Loading', cls: 'badge-emerald' };
@@ -163,17 +164,25 @@ const PrinterDetails = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
           {/* Quick Stats Banner */}
-          <div className="glass-panel" style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
-            <div style={{ flex: 1, padding: '1.5rem', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Total Pages</span>
-              <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--neon-cyan)', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div className="glass-panel" style={{ display: 'flex', padding: 0, overflow: 'hidden', minHeight: '180px' }}>
+            <div style={{ flex: '0 0 160px', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--border-subtle)' }}>
+              <PrinterIllustration 
+                isPrinting={printer.printer_status === 'Printing'} 
+                statusColor={color} 
+                isColor={printer.toner_level && printer.toner_level.includes('"type":"color"')}
+                maxWidth={120} 
+              />
+            </div>
+            <div style={{ flex: 1, padding: '1.5rem', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'center' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Total Pages</span>
+              <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--neon-cyan)', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1 }}>
                 {printer.pages_printed && !isNaN(parseInt(printer.pages_printed)) ? parseInt(printer.pages_printed).toLocaleString() : '—'}
               </span>
             </div>
-            <div style={{ flex: 1, padding: '1.5rem', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>Toner Level</span>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <TonerBar tonerLevelStr={printer.toner_level} isOffline={isCritical} />
+            <div style={{ flex: '0 0 240px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', alignSelf: 'flex-start', position: 'absolute', top: '1.5rem', left: '1.5rem' }}>Consumables</span>
+              <div style={{ transform: 'scale(1.5)', marginTop: '2rem' }}>
+                <TonerGauge tonerStr={printer.toner_level} color={color} isOffline={isCritical} />
               </div>
             </div>
           </div>

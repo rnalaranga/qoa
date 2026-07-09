@@ -2,8 +2,8 @@ import React from 'react';
 import { AlertTriangle, CheckCircle2, Settings, XCircle, Zap } from 'lucide-react';
 
 /* ── Dark Neon Printer Illustration ─────────────────────────── */
-const PrinterIllustration = ({ isPrinting, statusColor, isColor }) => (
-  <svg viewBox="0 0 200 160" style={{ width: '100%', maxWidth: 80, height: 'auto', position: 'relative', zIndex: 1 }}>
+const PrinterIllustration = ({ isPrinting, statusColor, isColor, maxWidth = 80 }) => (
+  <svg viewBox="0 0 200 160" style={{ width: '100%', maxWidth, height: 'auto', position: 'relative', zIndex: 1 }}>
     <defs>
       <linearGradient id="bodyGrad2" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor="#1a2540" />
@@ -367,8 +367,9 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
           )}
         </div>
       </div>
+      </div>
     </div>
   );
 };
 
-export default PrinterCard;
+export { PrinterCard as default, PrinterIllustration, TonerGauge };
