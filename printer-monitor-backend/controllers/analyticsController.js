@@ -87,20 +87,18 @@ const getErrorAnalytics = async (req, res) => {
 
         // 5. Total Pages Printed within date range
         const pagesQuery = `
-            SELECT SUM(max_pages - min_pages) as total_prints
-            FROM (
-                SELECT ip_address, 
-                       MAX(CAST(pages_printed AS UNSIGNED)) as max_pages, 
-                       MIN(CAST(pages_printed AS UNSIGNED)) as min_pages
-                FROM printer_logs
-                WHERE pages_printed IS NOT NULL AND pages_printed != ''
-                ${dateFilter}
-                ${ipFilter}
-                GROUP BY ip_address
-            ) AS subquery;
+            SELECT ip_address as name, (MAX(CAST(pages_printed AS UNSIGNED)) - MIN(CAST(pages_printed AS UNSIGNED))) as volume
+            FROM printer_logs
+            WHERE pages_printed IS NOT NULL AND pages_printed != ''
+            ${dateFilter}
+            ${ipFilter}
+            GROUP BY ip_address
+            HAVING volume > 0
+            ORDER BY volume DESC
         `;
         const [pagesData] = await db.query(pagesQuery, getParams());
-        const totalPrints = pagesData[0]?.total_prints || 0;
+        const totalPrints = pagesData.reduce((acc, curr) => acc + curr.volume, 0);
+        const topPrintersByVolume = pagesData.slice(0, 10);
 
         // 6. Total Toners Replaced calculation
         // Fetch chronological toner history
@@ -153,6 +151,7 @@ const getErrorAnalytics = async (req, res) => {
             printerErrors: printerErrorsData,
             timeSeries: timeSeriesData,
             recentErrors: recentErrors,
+            topPrintersByVolume: topPrintersByVolume,
             allPrinters: allPrinters
         });
 

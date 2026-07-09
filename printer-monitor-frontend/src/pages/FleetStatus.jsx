@@ -149,13 +149,21 @@ const FleetStatus = () => {
                   const isOffline = state === 'Offline';
                   const isError = state === 'Error';
 
+                  let isColorPrinter = false;
+                  if (p.toner_level && p.toner_level.startsWith('{')) {
+                    try {
+                      const data = JSON.parse(p.toner_level);
+                      if (data.type === 'color') isColorPrinter = true;
+                    } catch(e) {}
+                  }
+
                   return (
                     <tr key={p.ip_address} style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: label === 'OK' ? 'transparent' : color + '0D' }}>
                       {/* Device / Network */}
                       <td style={{ padding: '1.25rem 1.5rem', borderLeft: (label === 'Offline' || label === 'Warning' || label === 'Error') ? `2px solid ${color}` : '2px solid transparent' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-subtle)' }}>
-                            <Printer size={18} style={{ color: 'var(--neon-cyan)' }} />
+                          <div style={{ width: 40, height: 40, borderRadius: 10, background: isColorPrinter ? 'linear-gradient(135deg, rgba(0,255,255,0.1), rgba(255,0,255,0.1))' : 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-subtle)' }}>
+                            <Printer size={18} style={{ color: isColorPrinter ? '#fff' : 'var(--neon-cyan)', filter: isColorPrinter ? 'drop-shadow(0 0 5px rgba(255,255,255,0.8))' : 'none' }} />
                           </div>
                           <div>
                             <div style={{ fontWeight: 800, color: 'var(--text-bright)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.95rem' }}>

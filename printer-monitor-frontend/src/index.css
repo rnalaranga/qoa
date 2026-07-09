@@ -1791,3 +1791,45 @@ body {
 
 
 
+
+.print-header { display: none; }
+@media print {
+  .sidebar, .topbar, .hide-on-print, #toast-container, .theme-toggle, .btn-primary {
+    display: none !important;
+  }
+  .app-layout, .main-wrapper, .main-content, .dashboard-container, .page-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    color: black !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-header {
+    display: block !important;
+    margin-bottom: 30px !important;
+  }
+  .glass-panel {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    background: white !important;
+    color: black !important;
+    margin-bottom: 20px !important;
+  }
+  .glass-panel h3, .glass-panel div, .glass-panel span, .glass-panel p {
+    color: black !important;
+  }
+  svg {
+    max-width: 100% !important;
+  }
+  @page {
+    size: auto;
+    margin: 15mm;
+  }
+}

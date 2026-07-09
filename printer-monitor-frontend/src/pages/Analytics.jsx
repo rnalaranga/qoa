@@ -4,7 +4,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip as RechartsTooltip, PieChart, Pie, Cell, ResponsiveContainer
 } from 'recharts';
-import { Calendar, Filter, Activity, Printer as PrinterIcon, AlertTriangle, Clock, Layers, X } from 'lucide-react';
+import { Calendar, Filter, Activity, Printer as PrinterIcon, AlertTriangle, Clock, Layers, X, Printer, FileText } from 'lucide-react';
 
 const NEON_COLORS = ['#ff3b6b', '#ffb800', '#00d4ff', '#a855f7', '#ff6b35', '#00ff88'];
 
@@ -33,7 +33,7 @@ const DarkTooltip = ({ active, payload, label }) => {
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState({
-    errorTypes: [], printerErrors: [], timeSeries: [], recentErrors: [], allPrinters: []
+    errorTypes: [], printerErrors: [], timeSeries: [], recentErrors: [], topPrintersByVolume: [], allPrinters: []
   });
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState('');
@@ -84,16 +84,33 @@ const Analytics = () => {
 
   return (
     <div className="page-container">
+      {/* Hidden Print Header (only shows on print) */}
+      <div className="print-header">
+        <h1 style={{ margin: 0, fontSize: '1.5rem', color: '#000', marginBottom: '10px' }}>QOA Fleet - Analytics Report</h1>
+        <div style={{ display: 'flex', gap: '20px', fontSize: '12px', color: '#333', borderBottom: '2px solid #ccc', paddingBottom: '10px', marginBottom: '20px' }}>
+          <div><strong>Date Range:</strong> {startDate && endDate ? `${startDate} to ${endDate}` : 'All Time'}</div>
+          <div><strong>Selected Printer:</strong> {selectedIp ? selectedIp : 'All Printers'}</div>
+          <div><strong>Generated:</strong> {new Date().toLocaleString()}</div>
+        </div>
+      </div>
+
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+      <div className="hide-on-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div className="page-header" style={{ margin: 0 }}>
           <h1>Printer Analytics</h1>
           <p>Historical errors, usage trends, and individual printer performance.</p>
         </div>
+        <button 
+          onClick={() => window.print()} 
+          className="btn-primary" 
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', borderRadius: '10px', border: 'none', background: 'var(--neon-cyan)', color: '#000', fontWeight: 600, cursor: 'pointer', boxShadow: '0 0 15px rgba(0,212,255,0.2)' }}
+        >
+          <Printer size={18} /> Print Report
+        </button>
       </div>
 
       {/* Filters Bar */}
-      <div className="glass-panel" style={{ padding: '0.875rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+      <div className="glass-panel hide-on-print" style={{ padding: '0.875rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
           <Filter size={14} /> Filters
         </div>
@@ -266,6 +283,33 @@ const Analytics = () => {
                 </div>
               )}
             </div>
+            
+            {/* Top Printers by Volume */}
+            <div className="glass-panel" style={{ gridColumn: '1 / -1' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+                <FileText size={16} style={{ color: 'var(--neon-emerald)' }} />
+                Top Printers by Print Volume
+              </h3>
+              {analyticsData.topPrintersByVolume?.length > 0 ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={analyticsData.topPrintersByVolume} margin={{ top: 5, right: 10, left: -10, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#4a5568', fontSize: 10 }} interval={0} angle={-30} textAnchor="end" />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#4a5568', fontSize: 11 }} />
+                    <RechartsTooltip content={<DarkTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                    <Bar dataKey="volume" name="Pages Printed" fill="#00ff88" radius={[4, 4, 0, 0]}
+                      style={{ filter: 'drop-shadow(0 0 4px rgba(0,255,136,0.4))' }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="empty-state" style={{ height: 200 }}>
+                  <div className="empty-state-icon"><FileText size={26} /></div>
+                  <h3>No volume data</h3>
+                  <p>No print volume recorded for this period.</p>
+                </div>
+              )}
+            </div>
+            
           </div>
 
           {/* Recent Error Log */}

@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle, CheckCircle2, Settings, XCircle, Zap } from 'lucide-react';
 
 /* ── Dark Neon Printer Illustration ─────────────────────────── */
-const PrinterIllustration = ({ isPrinting, statusColor }) => (
+const PrinterIllustration = ({ isPrinting, statusColor, isColor }) => (
   <svg viewBox="0 0 200 160" style={{ width: '100%', maxWidth: 80, height: 'auto', position: 'relative', zIndex: 1 }}>
     <defs>
       <linearGradient id="bodyGrad2" x1="0" y1="0" x2="0" y2="1">
@@ -12,6 +12,12 @@ const PrinterIllustration = ({ isPrinting, statusColor }) => (
       <linearGradient id="topGrad2" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stopColor="#1e3a5f" />
         <stop offset="100%" stopColor="#2a1a4a" />
+      </linearGradient>
+      <linearGradient id="cmykGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor="#00FFFF" />
+        <stop offset="33%" stopColor="#FF00FF" />
+        <stop offset="66%" stopColor="#eab308" />
+        <stop offset="100%" stopColor="#1a2540" />
       </linearGradient>
       <linearGradient id="trayGrad2" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0%" stopColor={statusColor + '80'} />
@@ -41,9 +47,13 @@ const PrinterIllustration = ({ isPrinting, statusColor }) => (
 
     {/* Printer Body */}
     <rect x="45" y="65" width="110" height="48" rx="10" fill="url(#bodyGrad2)" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+    
+    {isColor && (
+      <rect x="145" y="70" width="4" height="20" rx="2" fill="url(#cmykGrad)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+    )}
 
     {/* Top Panel */}
-    <path d="M45 65 Q45 46 60 46 L140 46 Q155 46 155 65 Z" fill="url(#topGrad2)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+    <path d="M45 65 Q45 46 60 46 L140 46 Q155 46 155 65 Z" fill={isColor ? "url(#cmykGrad)" : "url(#topGrad2)"} stroke="rgba(255,255,255,0.08)" strokeWidth="1" opacity={isColor ? "0.8" : "1"} />
 
     {/* Status LED bar */}
     <rect x="55" y="58" width="90" height="5" rx="2.5" fill="rgba(0,0,0,0.4)" />
@@ -203,9 +213,11 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
   const { qoa_num, ip_address, model, toner_level, pages_printed, printer_status, error_status, customer_id, online_status, is_stale } = printer;
 
   let isTonerError = false;
+  let isColorPrinter = false;
   if (toner_level && toner_level.startsWith('{')) {
     try {
       const data = JSON.parse(toner_level);
+      if (data.type === 'color') isColorPrinter = true;
       if (data.c <= 0 || data.m <= 0 || data.y <= 0 || data.k <= 0) isTonerError = true;
     } catch(e) {}
   } else {
@@ -305,7 +317,7 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
             className="graphic-glow-bg"
             style={{ background: `radial-gradient(circle, ${mainThemeColor}40 0%, transparent 70%)` }}
           />
-          <PrinterIllustration isPrinting={isPrinting} statusColor={bulbColor} />
+          <PrinterIllustration isPrinting={isPrinting} statusColor={bulbColor} isColor={isColorPrinter} />
         </div>
         <div className="compact-gauge-wrapper">
           <TonerGauge tonerStr={toner_level} color={tonerColor} isOffline={!isConnected} />
