@@ -254,9 +254,8 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     isPrinting = true;
     mainThemeColor = '#a855f7'; bulbColor = '#a855f7'; tonerColor = '#a855f7';
     badges = [{ label: printer_status, color: '#a855f7', icon: Zap }];
-  } else {
     // Printer is connected
-    badges.push({ label: 'Connected', color: '#00ff88', icon: CheckCircle2, pulse: true });
+    badges.push({ label: 'Online', color: '#00ff88', icon: CheckCircle2, pulse: true });
 
     if (hasSpecificError || printer_status === 'Stopped' || printer_status === 'Error' || printer_status === 'Warning' || isTonerError) {
       if (isMaintenance) {

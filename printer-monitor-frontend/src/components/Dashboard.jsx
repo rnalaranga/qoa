@@ -69,15 +69,15 @@ const Dashboard = () => {
   };
 
   const totalPrinters = printers.length;
-  const onlinePrinters = printers.filter(p => getPrinterState(p) === 'Online').length;
-  const warningPrinters = printers.filter(p => getPrinterState(p) === 'Warning').length;
-  const errorOfflinePrinters = printers.filter(p => ['Offline', 'Error'].includes(getPrinterState(p))).length;
+  const offlinePrintersCount = printers.filter(p => p.online_status === 'Removed' || p.is_stale || p.printer_status === 'Offline').length;
+  const onlinePrintersCount = totalPrinters - offlinePrintersCount;
+  const issuePrintersCount = printers.filter(p => ['Error', 'Warning'].includes(getPrinterState(p))).length;
 
   const statChips = [
     { label: 'Total Printers', value: totalPrinters, icon: '🖨️', accent: 'var(--neon-cyan)', bg: 'var(--neon-cyan-dim)' },
-    { label: 'Online', value: onlinePrinters, icon: '✅', accent: 'var(--neon-emerald)', bg: 'var(--neon-emerald-dim)' },
-    { label: 'Warnings', value: warningPrinters, icon: '⚠️', accent: 'var(--neon-amber)', bg: 'var(--neon-amber-dim)' },
-    { label: 'Errors / Offline', value: errorOfflinePrinters, icon: '🔴', accent: 'var(--neon-rose)', bg: 'var(--neon-rose-dim)' },
+    { label: 'Online', value: onlinePrintersCount, icon: '✅', accent: 'var(--neon-emerald)', bg: 'var(--neon-emerald-dim)' },
+    { label: 'Has Issues', value: issuePrintersCount, icon: '⚠️', accent: 'var(--neon-amber)', bg: 'var(--neon-amber-dim)' },
+    { label: 'Offline', value: offlinePrintersCount, icon: '🔴', accent: 'var(--neon-rose)', bg: 'var(--neon-rose-dim)' },
   ];
 
   if (loading && printers.length === 0) {
