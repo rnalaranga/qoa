@@ -31,6 +31,7 @@ const Layout = () => {
 
   if (user?.role === 'admin') {
     navItems.splice(1, 0, { to: '/customers', icon: Users, label: 'Customers' });
+    navItems.splice(2, 0, { to: '/users', icon: Users, label: 'Print Users' });
   }
 
   return (

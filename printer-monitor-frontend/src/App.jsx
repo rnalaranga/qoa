@@ -10,6 +10,7 @@ import Alerts from './pages/Alerts';
 import Settings from './pages/Settings';
 import PrinterDetails from './pages/PrinterDetails';
 import PrinterCalendar from './pages/PrinterCalendar';
+import PrintUsers from './pages/PrintUsers';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -39,6 +40,7 @@ function App() {
               <Route path="alerts" element={<Alerts />} />
               <Route path="printer/:ip" element={<PrinterDetails />} />
               <Route path="printer/:ip/calendar" element={<PrinterCalendar />} />
+              <Route path="users" element={<PrintUsers />} />
               
               {/* Admin Only Routes */}
               <Route element={<PrivateRoute allowedRoles={['admin']} />}>

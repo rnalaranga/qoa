@@ -6,6 +6,7 @@ const printerRoutes = require('./routes/printerRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const authRoutes = require('./routes/authRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const printUserRoutes = require('./routes/printUserRoutes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/printers', printerRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/print-users', printUserRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

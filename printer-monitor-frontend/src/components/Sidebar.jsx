@@ -26,18 +26,22 @@ const Sidebar = () => {
           <FileText size={20} />
           <span>Analytics</span>
         </NavLink>
-        <NavLink to="/alerts" className={({ isActive }) => \`nav-item \${isActive ? 'active' : ''}\`}>
+        <NavLink to="/alerts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Bell size={20} />
           <span>Alerts</span>
         </NavLink>
         
         {user?.role === 'admin' && (
           <>
-            <NavLink to="/customers" className={({ isActive }) => \`nav-item \${isActive ? 'active' : ''}\`}>
+            <NavLink to="/customers" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Users size={20} />
               <span>Customers</span>
             </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => \`nav-item \${isActive ? 'active' : ''}\`}>
+            <NavLink to="/users" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              <Users size={20} />
+              <span>Print Users</span>
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <Settings size={20} />
               <span>Settings</span>
             </NavLink>
