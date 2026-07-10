@@ -4,6 +4,7 @@ const db = require('../config/db');
 
 // GET all print users
 router.get('/', async (req, res) => {
+    try {
         const [rows] = await db.query(`
             SELECT pu.*, c.name as customer_name 
             FROM print_users pu 
