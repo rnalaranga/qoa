@@ -189,7 +189,7 @@ const PrintUsers = () => {
                         </span>
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                           <button className="icon-btn edit-btn" onClick={() => openEditModal(user)}>
                             <Edit size={16} />
                           </button>
