@@ -55,6 +55,19 @@ const getCustomers = async (req, res) => {
     }
 };
 
+// @desc    Get customers list only (public)
+// @route   GET /api/customers/public
+// @access  Public
+const getPublicCustomers = async (req, res) => {
+    try {
+        const [customers] = await db.query('SELECT id, name FROM customers ORDER BY name ASC');
+        res.status(200).json(customers);
+    } catch (error) {
+        console.error('Error fetching public customers:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 // @desc    Create a new customer
 // @route   POST /api/customers
 // @access  Public
@@ -178,6 +191,7 @@ const updateCustomer = async (req, res) => {
 
 module.exports = {
     getCustomers,
+    getPublicCustomers,
     createCustomer,
     updateCustomer
 };

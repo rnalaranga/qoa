@@ -188,8 +188,8 @@ const PrintUsers = () => {
                           {isActive ? 'Active' : 'Blocked'}
                         </span>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: '0.5rem', flexWrap: 'nowrap' }}>
                           <button className="icon-btn edit-btn" onClick={() => openEditModal(user)}>
                             <Edit size={16} />
                           </button>

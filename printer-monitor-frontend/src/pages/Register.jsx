@@ -19,7 +19,7 @@ const Register = () => {
     // Fetch customers so user can link their account
     const fetchCustomers = async () => {
       try {
-        const { data } = await axios.get('/api/customers');
+        const { data } = await axios.get('/api/customers/public');
         setCustomers(data);
       } catch (err) {
         console.error('Failed to load customers');

@@ -250,12 +250,15 @@ const PrinterCard = ({ printer, onClick, onAssign }) => {
     isConnected = false;
     mainThemeColor = '#64748b'; bulbColor = '#64748b'; tonerColor = '#64748b';
     badges = [{ label: 'Offline', color: '#64748b', icon: XCircle }];
-  } else if (printer_status === 'Printing' || printer_status === 'Warmup') {
-    isPrinting = true;
-    mainThemeColor = '#a855f7'; bulbColor = '#a855f7'; tonerColor = '#a855f7';
-    badges = [{ label: printer_status, color: '#a855f7', icon: Zap }];
+  } else {
     // Printer is connected
     badges.push({ label: 'Online', color: '#00ff88', icon: CheckCircle2, pulse: true });
+
+    if (printer_status === 'Printing' || printer_status === 'Warmup') {
+      isPrinting = true;
+      mainThemeColor = '#a855f7'; bulbColor = '#a855f7'; tonerColor = '#a855f7';
+      badges.push({ label: printer_status, color: '#a855f7', icon: Zap });
+    }
 
     if (hasSpecificError || printer_status === 'Stopped' || printer_status === 'Error' || printer_status === 'Warning' || isTonerError) {
       if (isMaintenance) {

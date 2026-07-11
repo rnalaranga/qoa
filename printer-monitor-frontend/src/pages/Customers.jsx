@@ -197,8 +197,8 @@ const Customers = () => {
                         </td>
 
                         {/* Actions */}
-                        <td style={{ textAlign: 'right' }}>
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: '0.4rem', flexWrap: 'nowrap' }}>
                             <button
                               onClick={e => openEditModal(customer, e)}
                               className="icon-btn"

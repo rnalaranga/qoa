@@ -148,7 +148,7 @@ const Settings = () => {
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
               Download the Windows desktop agent to monitor local printers and automatically sync data to this cloud platform without requiring Java.
             </p>
-            <a href="https://drive.google.com/file/d/1yzJ9J745ZdLPzvU6i9qZA1vXU8FVHQJa/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-flex', justifyContent: 'center', width: '100%' }}>
+            <a href="https://drive.google.com/drive/folders/1hrDiB6ya3xl4Nq2r0_8jq2RIC6aKg6oL?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-flex', justifyContent: 'center', width: '100%' }}>
               Download Windows Agent
             </a>
           </div>
